@@ -1,0 +1,29 @@
+
+==== PROFINET DCP TOOL ====
+1 - DCP Identify All
+2 - DCP Set Name Station
+q - quit
+
+profinet_tool> Sending DCP Identify All and listening for 7s...
+Found 14 devices.
+Device(name_of_station=desktop-6jd9ili, MAC=02:1b:1b:29:49:00, IP=172.21.0.168, netmask=255.255.192.0, gateway=172.21.0.230, family=SIMATIC-PC)
+Device(name_of_station=rfidboxcobot, MAC=00:07:46:aa:07:cc, IP=172.21.1.20, netmask=255.255.192.0, gateway=172.21.0.230, family=TBEN-S2-2RFID-4DXP)
+Device(name_of_station=plcxbfesto62c9, MAC=30:b8:51:32:d3:9b, IP=172.21.3.1, netmask=255.255.192.0, gateway=172.21.0.230, family=S7-1500)
+Device(name_of_station=plcmagback, MAC=30:b8:51:33:7e:24, IP=172.21.4.1, netmask=255.255.192.0, gateway=172.21.0.230, family=S7-1500)
+Device(name_of_station=festo-mes-pc, MAC=4c:d7:17:90:73:a2, IP=172.21.0.90, netmask=255.255.192.0, gateway=0.0.0.0, family=SIMATIC-PC)
+Device(name_of_station=hmi.profinetxainterfacexb1c31c, MAC=30:13:89:35:da:a8, IP=172.21.1.10, netmask=255.255.192.0, gateway=0.0.0.0, family=MTP700 Unified Comfort)
+Device(name_of_station=hmixbdispense.profinetxainterfacexb1680a, MAC=30:13:89:35:d8:af, IP=172.21.2.10, netmask=255.255.192.0, gateway=172.21.0.230, family=MTP700 Unified Comfort)
+Device(name_of_station=desktop-6jd9ili, MAC=08:26:ae:3e:a5:ad, IP=172.21.0.192, netmask=255.255.192.0, gateway=172.21.0.230, family=SIMATIC-PC)
+Device(name_of_station=hmi.profinetxainterfacexb1c31c, MAC=30:13:89:2c:e9:c5, IP=172.21.3.10, netmask=255.255.192.0, gateway=0.0.0.0, family=MTP700 Unified Comfort)
+Device(name_of_station=plc, MAC=30:b8:51:33:7e:c7, IP=172.21.2.1, netmask=255.255.192.0, gateway=172.21.0.230, family=S7-1500)
+Device(name_of_station=hmi.profinetxainterfacexb1c31c, MAC=30:13:89:35:d9:c7, IP=172.21.6.10, netmask=255.255.192.0, gateway=0.0.0.0, family=MTP700 Unified Comfort)
+Device(name_of_station=kyan-laptop, MAC=a0:ce:c8:f7:ab:c9, IP=172.21.0.179, netmask=255.255.192.0, gateway=172.21.0.230, family=SIMATIC-PC)
+Device(name_of_station=gebruik-tt8ke80, MAC=60:cf:84:d1:d0:d5, IP=172.21.0.165, netmask=255.255.192.0, gateway=172.21.0.230, family=SIMATIC-PC)
+Device(name_of_station=plcxamikea2a4, MAC=30:b8:51:33:7e:62, IP=172.21.5.1, netmask=255.255.192.0, gateway=172.21.0.230, family=S7-1500)
+
+==== PROFINET DCP TOOL ====
+1 - DCP Identify All
+2 - DCP Set Name Station
+q - quit
+
+profinet_tool> Exiting
