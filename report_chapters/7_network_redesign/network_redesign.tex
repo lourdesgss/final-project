@@ -1,0 +1,145 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{float}
+\setlength{\parindent}{0pt}
+\usepackage{caption}
+\usepackage{fancyvrb}
+\usepackage{tcolorbox}
+\usepackage[a4paper, total={6in, 8.5in}]{geometry}
+\setlength{\footskip}{80pt}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+
+\title{Project - Network Redesign}
+\author{Aleksander Kłap}
+\date{08.06.2026}
+
+\begin{document}
+
+\maketitle
+\pagebreak
+
+\section{Logical Network Redesign}
+
+TODO: IN PROGRESS
+TODO: DIAGRAM HERE
+
+%%\begin{figure}[H]
+%%    \centering
+%%    \includegraphics[width=1\textwidth]{img/conduit_diagram.pdf}
+%%    \caption{Zone \& Conduit Diagram}
+%%\end{figure}
+
+The current flat /18 network is replaced with a layered zone architecture 
+based on the IEC 62443 zone and conduit model. 
+Each zone groups devices with similar operational functions. 
+All inter-zone traffic passes through a firewall and is restricted to explicitly whitelisted traffic paths.
+
+\subsection{Logic Zones}
+\subsubsection{IT Zone}
+The IT Zone contains nodes handling business logic and order management. It have no direct
+routed path to any OT device - all IT to OT traffic goes through the IDMZ.
+\subsubsection{IDMZ}
+The IDMZ acts as a buffer between IT and OT devices. No connecection is allowed 
+to pass from the IT to OT and vice versa. Every traffic exchange terminates inside IDMZ,
+and its re-innitiated to the other side. This solution implements IEC 62443-3-3 SR 5.1 principle.
+\subsubsection{OT Cell Zone}
+The OT Cell Zone Contains devices supporting production, but not beeing part of the physical production
+process. The Enigneering Workstation is placed in this logical zone, however, in physical
+implementation, this node will be further isolated into separate VLAN.
+\subsubsection{OT Production Zone}
+The OT Production Zone contains devices beeing part of the direct physical production process.
+Only inbound traffic allowed in this zone are reads and writes from the proxy services, and 
+S7comm+ from the engineering workstation.
+
+\subsection{New Nodes}
+\subsubsection{OPC UA proxy}
+In the AS-IS architecture, MES can directly connect to the PLC's OPC UA servers over the flat network.
+OPC UA proxy node aggregates all PLC's OPC UA servers traffic into single endpoint inside IDMZ.
+The MES connects only to proxy, that is also responsible for enforcing rules on 
+what nodes are readable and writable from the MES. Furthermore, it logs all sessions.
+This solution satisfies IEC 62443-3-3 SR 3.2.
+\subsubsection{Nginx}
+In AS-IS architecture, MES can directly access unencrypted HTTP services from the OT nodes.
+As stated in security requirements, all not strictly required HTTP servers of OT devices will be 
+disabled. However, for required HTTP traffic (e.g PLC's alarm table <- MES) the Nginx node is
+introduced in IDMZ. MES connects to the Nginx over HTTPS TLS 1.2, terminates the connection, access
+the requested HTTP node server and forwards it to the MES. Nginx enforces authentication,
+logging all requests and block requests for services that should not be reached from IT zone.
+\subsubsection{Dedicated MQTT broker}
+In the AS-IS architecture MQTT CVX device publish messages over a flat network to the MES.
+MQTT broker node placed in IDMZ, aggregates MQTT traffic from the CVX device using TLS 1.2 encryption,
+and it restrict inbound traffic to publish messages only. MES is subscribes to the
+MQTT broker, preventing direct communication between OT node and IT node. This solution
+satisfies IEC 62443-3-3 SR 1.1 and SR 3.1.
+\subsubsection{Engineering Workstation}
+In the AS-IS architecture, TIA Portal is run on the same PC as MES service - part of IT and reachable over flat network.
+A dedicated Engineering Workstation is placed in the OT Cell Zone (physically on separate VLAN).
+This workstation purpose is to program and configure PLC's and HMI's with separation
+from IT nodes. Traffic is restricted only to TCP 102 on PLC's and HMI's. This enforces
+least-privilage and IEC 62443-2-1 §4.3.3.
+\subsubsection{Syslog}
+In the AS-IS architecture, there is no centralized logging system implemented.
+Syslog node collects all logs from the firewalls, managed switches, OPC UA and HTTP proxy, and MQTT broker.
+This provides post-attack analysis and satisfies IEC 62443-3-3 SR 6.1 and NIS2 Article 21(2)(f). 
+\subsubsection{Backup}
+In AS-IS architecture, there is no documented backup procedure. The backup node recieves
+configuration backups from the Engineering Workstation after every change and daily database
+backups from the MES. It is placed on separate VLAN inside IT zone, separated from
+indbound traffic from OT. Satisfies IEC 62443-2-1 §4.3.4 and ISO/IEC 27001 A.12.3.
+\subsubsection{Log \& Backup proxy}
+
+
+
+\subsection{Firewalls}
+This section only describres briefly the high-level purpose of the firewall nodes.
+Further specification on permitted conduits is described in TODO
+\subsubsection{Edge Firewall}
+Terminates all VPN tunnels from remote engineers and vendor support, 
+enforces MFA before any traffic enters the IT zone, and blocks all unsolicited inbound 
+connections from the internet. Default-deny on all inbound. 
+Satisfies IEC 62443-2-1 §4.3.3.6 and NIS2 Article 21(2)(i).
+\subsubsection{IT - DMZ Firewall}
+Controls all traffic between the IT zone and the IDMZ. 
+\subsubsection{DMZ - OT Cell Firewall}
+Controls traffic between the IDMZ and the OT cell zone. 
+\subsubsection{OT Cell - OT Production Firewall}
+Controls traffic between the OT cell zone and the six station VLANs. 
+OPC UA proxy connections arrive from the IDMZ side, not the cell zone side, 
+so they do not pass this firewall. Profinet never crosses this boundary — 
+it remains Layer 2 within each station. All other traffic denied. 
+Satisfies IEC 62443-3-3 SR 5.1 and the least privilege principle.
+
+\section{Network Implementation}
+TODO: DIAGRAM HERE
+
+\subsection{VLAN Segmentation}
+The redesigned factory network is implemented using VLAN-based segmentation 
+on managed industrial switches. Each security zone is assigned a dedicated 
+VLAN and IP subnet. Inter-VLAN communication is not performed by the switch 
+itself but is routed through a central industrial firewall.
+The firewall acts as the default gateway for all VLANs and enforces security 
+policies between zones. A VLAN trunk connection between the firewall and the 
+managed switch transports traffic for all security zones while preserving 
+logical separation through IEEE 802.1Q VLAN tagging. \\
+
+\renewcommand{\arraystretch}{1.3} % 30% more row height
+\begin{tabularx}{\textwidth}{>{\bfseries}p{2.5cm} X X}
+    VLAN & \textbf{Zone} & \textbf{Nodes} \vspace{0.5em}\\
+\toprule
+    10 & IT & MES PC, Data Storage PC \\
+    20 & IDMZ & Proxy PC\\
+    30 & OT Cell & COBOL PC, MQTT CVX \\
+    40 & OT Cell - Engineering & Engineering Workstation  \\
+    101 & OT Prod - Station 1 & PLC1, HMI1, UR3e Robot Arm Controller, TURCK position sensor \\
+    102 & OT Prod - Station 2 & PLC2, HMI2, I/O device, Festo Controller \\
+    103 & OT Prod - Station 3 & PLC3, HMI3, SensoPart Camera \\
+    104 & OT Prod - Station 4 & PLC4, HMI4 \\
+    105 & OT Prod - Station 5 & PLC5, HMI5 \\
+    106 & OT Prod - Station 6 & PLC6, HMI6, Festo controller \\
+\end{tabularx}
+
+\subsection{Restricted Routing}
+\end{document}
+

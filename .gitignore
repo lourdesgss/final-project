@@ -9,3 +9,4 @@ pyvenv.cfg
 *.lof
 *.log
 *.toc
+*.synctex.gz
