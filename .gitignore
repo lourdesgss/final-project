@@ -3,3 +3,9 @@ lib
 bin
 include
 pyvenv.cfg
+*.aux
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.toc
