@@ -1,0 +1,103 @@
+SR-01 - Network Segmentation
+
+sr-01.1 Network shall be divided into 5 zones:
+    > OT field zone (PLC's, HMI's)
+    > OT cell zone (Festo Controllers, Robot Controller, Camera, MQTT device)
+    > IDMZ (OPC/UA Proxy, MQTT broker, backup server historian)
+    > IT Zone (MES PC, COBOL PC)
+sr-01.2 Each zone must be implemented on separate subnetwork with inter-zone traffic controlled by the firewall rules.
+sr-01.3 No device from IT zone shall directly reach OT field zone.
+
+sr-01 Standards reference:
+    > IEC 62443-3-3 SR 5.1 (Network Segmentation)
+    > IEC 62443-1-1 Zone & Conduit model
+    > NIS2 Article 21(2)(d)
+
+SR-02 - Firewall with industrial protocol inspection
+The OT zones and IT zones shall be separated with the industrial firewall(s). 
+Default-denay policy an all inter-zone conduits, with only explicitly
+whitelisted flows permitted:
+    > OPC UA (TCP port 4840) from IDMZ OPC UA proxy to PLC's and Festo Controllers
+    > MQTT (TCP port 8883 TLS) from MQTT device to MQTT broker in IDMZ
+    > HTTP (TCP 80) alarm pooling from OPC UA in IDMZ
+    
+Standards:
+     > IEC 62443-3-3 SR 5.2
+     > IEC 62443-2-1 security management
+    
+SR-03 - OPC UA Hardening
+All OPC UA servers shall operate in Security Mode: Sign&Encrypt with SecurityPolicy:Basic256Sha256.
+Each client (MES, COBOL) must authenticate with an application certificate. Annonymous and username/password authentication sessions shall be disabled.
+OPC/UA servers shall not be reachable from the nodes inside IT zone directly, all access routes shall be set through a dedicated OPC UA proxy node.
+
+Standards:
+    > IEC 62443-3-3 SR 1.1, SR 1.3, SR 3.1; OPC UA Part 2 (Security Model)
+
+SR-04 MQTT Hardening
+The MQTT broker shall be hosted on a dedicated server inside IDMZ. All MQTT connections shall use TLS 1.2 or higher.
+Each MQTT publusher (MQTT CXV device) shall authenticate with a client certificate.
+Topic level ACLs must restrict publishers only to its own publish topics.
+Nodes in IT zone shall only subscribe to the OT topics.
+
+Standards:
+    > IEC 62443-3-3 SR 1.1, SR 3.1; MQTT v5 specification; NIS2 Article 21(2)(h)
+
+SR-05 HTTP/Web Interface Hardening
+All HTTP services on PLC's HMI's, Festo Controllers, and cameras shall be disabled unless strictly required for an operational functionality.
+If the Web Interface is required, it must be migrated to HTTPS (TLS 1.2+) with a device certificate, and access restricted by firewall to only sepcific source
+IP's of pooling systems.
+Shared/default passwords must be replaced with unique strong cridentials per device.
+The MES Web Interface must enforce HTTPS (TLS 1.2+) and role-based access.
+
+Standards:
+    > IEC 62443-3-3 SR 1.1, SR 1.5;
+    > NIST SP 800-82;
+    > IEC 62443-2-1 patch/config management
+
+SR-06 Authentication and Least Privilage
+All interactive access (PLC programming, HMI configuration, robot controller configuration) to the OT devices shall require individual user authentication.
+Role separation shall be enforced:
+    > Operator (monitor only)
+    > Engineer (upload programs, change parameters)
+    > Administrator (device configuration, user management)
+
+Furthermore, PLC Programming access (TIA Portal) shall be only possible from designated Engineering Workstation.
+
+Standards:
+    > IEC 62443-3-3 SR 1.1–1.3; 
+    > IEC 62443-2-1 §4.3.3; 
+    > ISO/IEC 27001 A.9
+
+SR-04 Secure Engineering Access
+A dedicated Engineering Workstation shall be physically or logically isolated from the IT Zone.
+It shall connect to PLC's only through industrial firewall via controlled conduit, with firewall rules permitting only TIA Portal protocols to the PLC's IP's. 
+
+
+SR-08 Logging and Monitoring
+All network devices (managed switches, routers, industrial firewalls, PLC's with switch modules) shall send logs to a centralized Syslog collector in the IDMZ zone.
+The industrial firewalls shall log all denied traffic.
+OPC UA server shall log all sessions establishment and authentication failiures.
+The MQTT brocker shall log all connect/disconnect events and authentication failiures.
+
+Standards:
+    > IEC 62443-3-3 SR 6.1, SR 6.2;
+    > NIS2 Article 21(2)(f); 
+    > ISO/IEC 27001 A.12.4
+
+SR-09 NTP/Time synchronization
+A single NTP server must be designated. All OT devices shall synchronize using this server.
+
+Standards:
+    > IEC 62443-2-1 §4.3.4; ISO/IEC 27001 A.12.3; NIS2 Article 21(2)(c)
+
+
+SR-10 Backup and Recovery
+All PLC programs, HMI and Controllers configurations must be backed up after every change to and dedicated backup storage. 
+Backup must be stored offline.
+Recovery procedure shall be documented and tested at least once per half a year.
+MES database shall be backed up once a day.
+
+Standards:
+    > IEC 62443-2-1 §4.3.4; 
+    > ISO/IEC 27001 A.12.3; 
+    > NIS2 Article 21(2)(c)

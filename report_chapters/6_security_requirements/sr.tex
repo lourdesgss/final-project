@@ -1,0 +1,288 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{float}
+\setlength{\parindent}{0pt}
+\usepackage{caption}
+\usepackage{fancyvrb}
+\usepackage{tcolorbox}
+\usepackage[a4paper, total={6in, 8.5in}]{geometry}
+\setlength{\footskip}{80pt}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+
+\title{Project - Security Requirements}
+\author{Aleksander Kłap}
+\date{08.06.2026}
+
+\begin{document}
+
+\maketitle
+\pagebreak
+
+\section{Security Requirements}
+
+%% SR1
+\begin{tabularx}{\textwidth}{>{\bfseries}p{2.5cm} X}
+    \textit{SR-01} & \textbf{Network Segmentation} \vspace{0.5em}\\
+\toprule
+\textit{SR-01.1} &
+The network shall be divided into the following security zones:
+\begin{itemize}[label=-, itemsep=0pt, topsep=2pt]
+    \item OT Field Zone (PLCs, HMIs)
+    \item OT Cell Zone (Festo Controllers, Robot Controller, Cameras, MQTT Device)
+    \item Industrial DMZ (OPC UA Proxy, MQTT Broker, Backup Server, Historian)
+    \item IT Zone (MES Server, COBOL Vision System)
+\end{itemize} \vspace{0.5em}
+\\
+\textit{SR-01.2} &
+Each zone shall be implemented as a separate subnet/VLAN.
+Communication between zones shall only be permitted through
+    firewall-controlled conduits. \vspace{0.5em}
+\\
+\textit{SR-01.3} &
+Direct communication from the IT Zone to the OT Field Zone
+    shall be prohibited. \vspace{0.5em}
+\\
+\midrule
+    \textit{Standards Reference} &
+\begin{itemize}[label=-, noitemsep, topsep=0pt, leftmargin=*]
+    \item IEC 62443-3-3 SR 5.1 -- Restricted Data Flow
+    \item IEC 62443-1-1 -- Zone and Conduit Model
+    \item NIS2 Article 21(2)(d)
+\end{itemize} \vspace{1em} \\ 
+
+\end{tabularx}
+\vspace{2em}
+
+%% SR2
+\begin{tabularx}{\textwidth}{>{\bfseries}p{2.5cm} X}
+    \textit{SR-02} & \textbf{Firewall with protocol inspection} \vspace{0.5em}\\
+\toprule
+\textit{SR-02.1} &
+    The OT zones and IT zone shall be separated with the industrial firewall(s).
+    \vspace{0.5em}
+\\
+\textit{SR-02.2} &
+Firewall rules shall enforce default-denay policy on all inter-zone traffic,
+with only explicitly whitelisted flows permitted:
+\begin{itemize}[label=-, itemsep=0pt, topsep=2pt]
+    \item OPC UA (TCP port 4840) from IMDZ OPC UA proxy to PLC's and Festo Controllers
+    \item MQTT (TCP port 8883 TLC) from MQTT device to MQTT broker in IDMZ
+\end{itemize} \vspace{1em}
+    \\
+\midrule
+    \textit{Standards Reference} &
+\begin{itemize}[label=-, noitemsep, topsep=0pt, leftmargin=*]
+    \item IEC 62443-3-3 SR 5.2
+    \item IEC 62443-2-1 security management
+\end{itemize} \vspace{1em} \\ 
+\end{tabularx}
+\vspace{2em}
+
+%% SR4
+\begin{tabularx}{\textwidth}{>{\bfseries}p{2.5cm} X}
+    \textit{SR-03} & \textbf{OPC UA Hardening} \vspace{0.5em}\\
+\toprule
+\textit{SR-03.1} &
+    
+    All OPC UA servers shall operate in Security Mode: Sign\&Encrypt with SecurityPolicy:Basic256Sha256.
+    \vspace{0.5em}
+\\
+\textit{SR-03.2} &
+    Each client (MES, COBOL) must authenticate with an application certificate. Annonymous and username/password authentication sessions shall be disabled.
+    \vspace{0.5em}
+    \\
+\textit{SR-03.3} &
+    OPC/UA servers shall not be reachable from the nodes inside IT zone directly, all access routes shall be set through a dedicated OPC UA proxy in IDMZ
+    \vspace{0.5em}
+    \\
+\midrule
+    \textit{Standards Reference} &
+\begin{itemize}[label=-, noitemsep, topsep=0pt, leftmargin=*]
+    \item IEC 62443-3-3 SR 1.1, SR 1.3, SR 3.1; OPC UA Part 2 (Security Model)
+\end{itemize} \vspace{1em} \\ 
+\end{tabularx}
+\vspace{2em}
+
+%% SR4
+\begin{tabularx}{\textwidth}{>{\bfseries}p{2.5cm} X}
+    \textit{SR-04} & \textbf{MQTT Hardening} \vspace{0.5em}\\
+\toprule
+\textit{SR-04.1} &
+    The MQTT broker shall be hosted on a dedicated server inside IDMZ. All MQTT connections shall use TLS 1.2 or higher.
+    \vspace{0.5em}
+\\
+\textit{SR-04.2} &
+    Each MQTT publusher (MQTT CXV device) shall authenticate with a client certificate.
+    \vspace{0.5em}
+    \\
+\textit{SR-04.3} &
+    Topic level ACLs must restrict publishers only to its own publish topics.
+    \vspace{0.5em}
+    \\
+\textit{SR-04.4} &
+    Nodes in IT zone shall only subscribe (not publush) to the OT topics.
+    \vspace{0.5em}
+    \\
+\midrule
+    \textit{Standards Reference} &
+\begin{itemize}[label=-, noitemsep, topsep=0pt, leftmargin=*]
+    \item IEC 62443-3-3 SR 1.1, SR 3.1; MQTT v5 specification; NIS2 Article 21(2)(h)
+\end{itemize} \vspace{1em} \\ 
+\end{tabularx}
+\vspace{2em}
+
+%% SR5
+\begin{tabularx}{\textwidth}{>{\bfseries}p{2.5cm} X}
+    \textit{SR-05} & \textbf{HTTP/Web Service Hardening} \vspace{0.5em}\\
+\toprule
+\textit{SR-04.1} &
+
+    All HTTP services on PLC's HMI's, Festo Controllers, and cameras shall be disabled unless strictly required for an operational functionality.
+    \vspace{0.5em}
+\\
+\textit{SR-04.2} &
+    If the Web Interface is required, it must be migrated to HTTPS (TLS 1.2+) with a device certificate, and access restricted by firewall to only sepcific source
+    IP's of pooling systems.
+    \vspace{0.5em}
+    \\
+\textit{SR-04.3} &
+    Topic level ACLs must restrict publishers only to its own publish topics.
+    \vspace{0.5em}
+    \\
+\textit{SR-04.4} &
+    Nodes in IT zone shall only subscribe (not publush) to the OT topics.
+    \vspace{0.5em}
+    \\
+\midrule
+    \textit{Standards Reference} &
+\begin{itemize}[label=-, noitemsep, topsep=0pt, leftmargin=*]
+    \item IEC 62443-3-3 SR 1.1, SR 3.1; MQTT v5 specification; NIS2 Article 21(2)(h)
+\end{itemize} \vspace{1em} \\ 
+\end{tabularx}
+\vspace{2em}
+
+%% SR6
+\begin{tabularx}{\textwidth}{>{\bfseries}p{2.5cm} X}
+    \textit{SR-06} & \textbf{Authentication and Least Privilage} \vspace{0.5em}\\
+\toprule
+\textit{SR-06.1} &
+    All interactive access (PLC programming, HMI configuration, robot controller configuration) to the OT devices shall require individual user authentication.
+    \vspace{0.5em}
+\\
+\textit{SR-06.2} &
+    Role separation shall be enforced:
+    \begin{itemize}[label=-, noitemsep, topsep=0pt, leftmargin=*]
+        \item Operator (monitor only)
+        \item Engineer (upload programs, change parameters)
+        \item Administrator (device configuration, user management)
+    \end{itemize} \vspace{1em} \\ 
+    \vspace{0.5em}
+    \\
+\textit{SR-06.3} &
+    PLC Programming access (TIA Portal) shall be only possible from designated Engineering Workstation.
+    \vspace{0.5em}
+    \\
+\midrule
+    \textit{Standards Reference} &
+\begin{itemize}[label=-, noitemsep, topsep=0pt, leftmargin=*]
+    \item IEC 62443-3-3 SR 1.1–1.3; 
+    \item IEC 62443-2-1 §4.3.3; 
+    \item ISO/IEC 27001 A.9
+\end{itemize} \vspace{1em} \\ 
+\end{tabularx}
+\vspace{2em}
+
+%% SR7
+\begin{tabularx}{\textwidth}{>{\bfseries}p{2.5cm} X}
+    \textit{SR-07} & \textbf{Secure Engineering Access} \vspace{0.5em}\\
+\toprule
+\textit{SR-07.1} &
+    A dedicated Engineering Workstation shall be physically or logically isolated from the IT Zone.
+    \vspace{0.5em}
+\\
+\textit{SR-07.2} &
+    The Engineering Workstation shall connect to PLC's only through industrial firewall via controlled conduit, with firewall rules permitting only TIA Portal protocols to the PLC's IP's. 
+    \vspace{0.5em}
+    \\
+\end{tabularx}
+\vspace{2em}
+
+%% SR8
+\begin{tabularx}{\textwidth}{>{\bfseries}p{2.5cm} X}
+    \textit{SR-08} & \textbf{Logging and Monitoring} \vspace{0.5em}\\
+\toprule
+\textit{SR-08.1} &
+    All network devices (managed switches, routers, industrial firewalls, PLC's with switch modules) shall send logs to a centralized Syslog collector.
+    \vspace{0.5em}
+\\
+\textit{SR-08.2} &
+    The industrial firewalls shall log all denied traffic.
+    \vspace{0.5em}
+    \\
+\textit{SR-08.3} &
+    OPC UA server shall log all sessions establishment and authentication failiures.
+    \vspace{0.5em}
+    \\
+\textit{SR-08.4} &
+    The MQTT brocker shall log all connect/disconnect events and authentication failiures.
+    \vspace{0.5em}
+    \\
+\midrule
+    \textit{Standards Reference} &
+\begin{itemize}[label=-, noitemsep, topsep=0pt, leftmargin=*]
+    \item IEC 62443-3-3 SR 6.1, SR 6.2;
+    \item NIS2 Article 21(2)(f); 
+    \item ISO/IEC 27001 A.12.4
+\end{itemize} \vspace{1em} \\ 
+\end{tabularx}
+\vspace{2em}
+
+%% SR9
+\begin{tabularx}{\textwidth}{>{\bfseries}p{2.5cm} X}
+    \textit{SR-09} & \textbf{NTP/Time synchronization} \vspace{0.5em}\\
+\toprule
+\textit{SR-09.1} &
+    A single NTP server must be designated. All OT devices shall synchronize using this server.
+    \vspace{0.5em}
+\\
+\midrule
+    \textit{Standards Reference} &
+\begin{itemize}[label=-, noitemsep, topsep=0pt, leftmargin=*]
+    \item IEC 62443-2-1 §4.3.4; ISO/IEC 27001 A.12.3; NIS2 Article 21(2)(c)
+\end{itemize} \vspace{1em} \\ 
+\end{tabularx}
+\vspace{2em}
+
+%% SR10
+\begin{tabularx}{\textwidth}{>{\bfseries}p{2.5cm} X}
+    \textit{SR-10} & \textbf{NTP/Time synchronization} \vspace{0.5em}\\
+\toprule
+\textit{SR-10.1} &
+    All PLC programs, HMI and Controllers configurations must be backed up after every change to and dedicated backup storage. 
+    \vspace{0.5em}
+\\
+\textit{SR-10.2} &
+    Backup must be stored offline.
+    \vspace{0.5em}
+\\
+\textit{SR-10.3} &
+    Recovery procedure shall be documented and tested at least once per half a year.
+    \vspace{0.5em}
+\\
+\textit{SR-10.4} &
+    MES database shall be backed up once a day.
+    \vspace{0.5em}
+\\
+\midrule
+    \textit{Standards Reference} &
+\begin{itemize}[label=-, noitemsep, topsep=0pt, leftmargin=*]
+    \item IEC 62443-2-1 §4.3.4; 
+    \item ISO/IEC 27001 A.12.3; 
+    \item NIS2 Article 21(2)(c)
+\end{itemize} \vspace{1em} \\ 
+\end{tabularx}
+\vspace{2em}
+\end{document}
+
