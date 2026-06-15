@@ -1,30 +1,8 @@
-\documentclass{article}
-\usepackage{graphicx}
-\usepackage{float}
-\setlength{\parindent}{0pt}
-\usepackage{caption}
-\usepackage{fancyvrb}
-\usepackage{tcolorbox}
-\usepackage[a4paper, total={6in, 8.5in}]{geometry}
-\setlength{\footskip}{80pt}
-\usepackage{tabularx}
-\usepackage{booktabs}
-\usepackage{enumitem}
-
-\title{Project - Network Redesign}
-\author{Aleksander Kłap}
-\date{08.06.2026}
-
-\begin{document}
-
-\maketitle
-\pagebreak
-
 \section{Logical Network Redesign}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{img/logic_redesign.pdf}
+    \includegraphics[width=1\textwidth]{./report_chapters/7_network_redesign/img/logic_redesign.pdf}
     \caption{Zone \& Conduit Diagram}
 \end{figure}
 
@@ -112,7 +90,7 @@ Satisfies IEC 62443-3-3 SR 5.1 and the least privilege principle.
 The Network Implementation diagram is appended to the report for better visibility.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{img/redesign_iml.pdf}
+    \includegraphics[width=1\textwidth]{report_chapters/7_network_redesign/img/redesign_iml.pdf}
     \caption{Network Implementation}
 \end{figure}
 
@@ -184,5 +162,4 @@ and re-innitiated in the IDMZ proxy to the other side. \\ \vspace{1em}
     Webshop & Internet clients to MES & HTTPS/TCP443 & Public webshop terminates in IT, no OT reachability \\
 \end{tabularx}
 
-\end{document}
 

@@ -1,24 +1,4 @@
-\documentclass{article}
-\usepackage[utf8]{inputenc}
-\usepackage{geometry}
-\usepackage{booktabs}
-\usepackage{graphicx}
-\usepackage{caption}
-\usepackage{array}
-\usepackage{adjustbox}
-\usepackage{enumitem}
-
-\geometry{a4paper, margin=1in}
-
-\title{ICS Threat Analysis (IEC 62443-based)}
-\author{}
-\date{}
-
-\begin{document}
-
-\maketitle
-
-\section{Introduction}
+\section{Threat Modelling}
 
 This analysis follows principles from IEC 62443, which defines a structured approach to identifying threats in Industrial Control Systems (ICS) based on zones, conduits, and system integrity requirements.
 
@@ -26,49 +6,48 @@ The assessment uses a simplified STRIDE model adapted for ICS environments and c
 
 Industrial systems are particularly sensitive because compromise is not limited to data loss; manipulation can directly affect physical processes, safety constraints, and production continuity.
 
-\section{Attacker Profiles}
+\subsection{Attacker Profiles}
 
-\subsection*{External attacker}
+\subsubsection*{External attacker}
 Typically motivated by financial gain (ransomware), disruption, or opportunistic exploitation of exposed services. Often relies on phishing, misconfigured remote access, or known vulnerabilities.
 
-\subsection*{Insider}
+\subsubsection*{Insider}
 A user with legitimate access (operator, engineer, contractor). Capable of bypassing many perimeter controls and posing the highest risk for silent tampering.
 
-\subsection*{Student / opportunistic actor}
+\subsubsection*{Student / opportunistic actor}
 Low sophistication but high physical or local access in lab environments. Often responsible for accidental misconfigurations or simple exploitation of weak segmentation.
 
-\section{Threat Scenarios}
+\subsection{Threat Scenarios}
 
-\subsection{PLC manipulation}
+\subsubsection{PLC manipulation}
 An attacker gains access to the engineering environment or PLC network and modifies control logic (e.g., ladder logic, function blocks, or setpoints). This may result in unsafe actuator behaviour, incorrect process thresholds, or bypassed interlocks.
 
 External attackers typically achieve this via compromised engineering workstations or remote access abuse. Insiders can perform direct modifications with minimal detection risk.
 
-\subsection{Denial of Service (DoS)}
+\subsubsection{Denial of Service (DoS)}
 An attacker disrupts communication between PLCs, SCADA, and HMI systems by flooding network segments, exploiting protocol weaknesses, or overwhelming control servers.
 
 Industrial protocols such as Modbus/TCP or OPC may lack robust authentication or rate limiting, making them vulnerable to traffic-based disruption.
 
-\subsection{Unauthorized device access}
+\subsubsection{Unauthorized device access}
 A rogue device is introduced into the control network, either physically or via network misconfiguration. Once connected, it can scan, impersonate trusted nodes, or interact with PLC services.
 
 This scenario is particularly realistic in lab environments where physical access is possible.
 
-\subsection{Malware infection via Engineering PC}
+\subsubsection{Malware infection via Engineering PC}
 The Engineering Workstation is compromised via phishing, malicious downloads, or removable media. Once infected, attackers can pivot into PLC networks, extract logic files, or deploy malicious firmware changes.
 
 This is one of the most critical ICS attack vectors because the Engineering PC often has unrestricted access to control assets.
 
-\subsection{Data manipulation via MES / Webshop systems}
+\subsubsection{Data manipulation via MES / Webshop systems}
 Attacks targeting Manufacturing Execution Systems (MES) or web interfaces allow modification of production orders, process parameters, or scheduling data.
 
 This can lead to incorrect production batches, financial losses, or downstream process disruption in physical systems.
 
-\section{Threat Table}
+\subsection{Threat Table}
 
 \begin{table}[h!]
 \centering
-\caption{ICS Threat Analysis Matrix (IEC 62443-based)}
 \begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{@{}lcccccl@{}}
 \toprule
@@ -88,6 +67,5 @@ Network Switches & Rogue device connection & Student / Insider & Spoofing & Medi
 \bottomrule
 \end{tabular}
 \end{adjustbox}
+\caption{ICS Threat Analysis Matrix (IEC 62443-based)}
 \end{table}
-
-\end{document}

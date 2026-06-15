@@ -1,30 +1,9 @@
-\documentclass{article}
-\usepackage{graphicx}
-\usepackage{float}
-\setlength{\parindent}{0pt}
-\usepackage{caption}
-\usepackage{fancyvrb}
-\usepackage{tcolorbox}
-\usepackage[a4paper, total={6in, 8.5in}]{geometry}
-\setlength{\footskip}{80pt}
-\usepackage{tabularx}
-\usepackage{booktabs}
-\usepackage{enumitem}
-
-\title{Project - Security Requirements}
-\author{Aleksander Kłap}
-\date{08.06.2026}
-
-\begin{document}
-
-\maketitle
-\pagebreak
-
 \section{Security Requirements}
 
 %% SR1
-\begin{tabularx}{\textwidth}{>{\bfseries}p{2.5cm} X}
-    \textit{SR-01} & \textbf{Network Segmentation} \vspace{0.5em}\\
+\begin{tabularx}
+{\textwidth}{>{\bfseries}p{2.5cm} X}
+\textit{SR-01} & \textbf{Network Segmentation} \vspace{0.5em}\\
 \toprule
 \textit{SR-01.1} &
 The network shall be divided into the following security zones:
@@ -51,7 +30,6 @@ Direct communication from the IT Zone to the OT Field Zone
     \item IEC 62443-1-1 -- Zone and Conduit Model
     \item NIS2 Article 21(2)(d)
 \end{itemize} \vspace{1em} \\ 
-
 \end{tabularx}
 \vspace{2em}
 
@@ -284,5 +262,5 @@ with only explicitly whitelisted flows permitted:
 \end{itemize} \vspace{1em} \\ 
 \end{tabularx}
 \vspace{2em}
-\end{document}
+
 

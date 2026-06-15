@@ -1,27 +1,4 @@
-\documentclass{article}
-\usepackage[utf8]{inputenc}
-\usepackage{geometry}
-\usepackage{booktabs}
-\usepackage{graphicx}
-\usepackage{caption}
-\usepackage{array}
-\usepackage{adjustbox}
-\usepackage{enumitem}
-\usepackage{multirow}
-\usepackage{xcolor}
-\usepackage{longtable}
-
-\geometry{a4paper, margin=1in}
-
-\title{Festo Smart Factory Lab - ICS Security Assessment}
-\author{Network Security Assessment Team}
-\date{\today}
-
-\begin{document}
-
-\maketitle
-
-\section{Executive Summary}
+\section{Trust Zones and Segmentation}
 
 This assessment evaluates the security posture of the Festo Smart Factory Lab OT/ICS network. The lab comprises six manufacturing stations (conveyor, sorting, camera inspection, magazine, press, oven) plus a robot arm cell, interconnected through Siemens S7-1500 PLCs, Festo CPX controllers, MTP700 HMIs, and a centralised MES PC.
 
@@ -29,7 +6,7 @@ The assessment is based on passive packet capture analysis (5 captures, ~55,000 
 
 \begin{table}[h!]
 \centering
-\caption{Assessment Scope Key Findings}
+
 \begin{tabular}{@{}l>{\raggedright\arraybackslash}p{0.6\textwidth}@{}}
 \toprule
 \textbf{Assessment Scope} & \textbf{Key Finding} \\
@@ -42,17 +19,17 @@ Unaccounted assets & 6+ devices not in original inventory \\
 Wireless / external exposure & TP-Link AP present on OT subnet \\
 \bottomrule
 \end{tabular}
+\caption{Assessment Scope Key Findings}
 \end{table}
 
 The overall security posture is assessed as \textbf{CRITICAL}. The network presents no meaningful barrier between IT systems, engineering workstations, visitor devices, and live industrial control equipment. A single compromised host on the subnet has unrestricted access to all PLCs and HMIs.
 
-\section{Regulatory and Standards Alignment}
+\subsection{Regulatory and Standards Alignment}
 
-\subsection{IEC 62443 Violations}
+\subsubsection{IEC 62443 Violations}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
-\caption{IEC 62443 Violations}
 \begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{@{}p{0.55\textwidth}p{0.4\textwidth}@{}}
 \toprule
@@ -66,13 +43,13 @@ No network segmentation or zone boundary protection & IEC 62443-3-3 / SR 5.1 \& 
 \bottomrule
 \end{tabular}
 \end{adjustbox}
+\caption{IEC 62443 Violations}
 \end{table}
 
-\subsection{ISO/IEC 27001 Violations}
+\subsubsection{ISO/IEC 27001 Violations}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
-\caption{ISO/IEC 27001 Violations}
 \begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{@{}p{0.55\textwidth}p{0.4\textwidth}@{}}
 \toprule
@@ -84,13 +61,13 @@ No firewall, ACL, or VLAN between MES-level and field-level devices & Annex A.8.
 \bottomrule
 \end{tabular}
 \end{adjustbox}
+\caption{ISO/IEC 27001 Violations}
 \end{table}
 
-\subsection{NIS2 Directive Violations}
+\subsubsection{NIS2 Directive Violations}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
-\caption{NIS2 Directive Violations}
 \begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{@{}p{0.55\textwidth}p{0.4\textwidth}@{}}
 \toprule
@@ -102,13 +79,11 @@ Visitor/external laptop (Kyan\_laptop, a0:ce:c8:f7:ab:c9) on live OT subnet — 
 \bottomrule
 \end{tabular}
 \end{adjustbox}
+\caption{NIS2 Directive Violations}
 \end{table}
 
-\subsection{Defense-in-Depth Violations}
-
-\begin{table}[h!]
-\centering
-\caption{Defense-in-Depth Violations}
+\subsubsection{Defense-in-Depth Violations}
+\begin{table}[H]
 \begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{@{}p{0.55\textwidth}p{0.4\textwidth}@{}}
 \toprule
@@ -122,13 +97,13 @@ Single perimeter breach allows unrestricted lateral movement to all PLCs & Defen
 \bottomrule
 \end{tabular}
 \end{adjustbox}
+\caption{Defense-in-Depth Violations}
 \end{table}
 
-\subsection{Least Privilege \& Zero Trust Violations}
+\subsubsection{Least Privilege \& Zero Trust Violations}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
-\caption{Least Privilege \& Zero Trust Violations}
 \begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{@{}p{0.55\textwidth}p{0.4\textwidth}@{}}
 \toprule
@@ -142,19 +117,17 @@ Every device trusts every other device based on subnet membership, not verified 
 \bottomrule
 \end{tabular}
 \end{adjustbox}
-\end{table}
+\caption{Least Privilege \& Zero Trust Violations} \end{table}
+\subsection{Network Identification}
 
-\section{Network Identification}
-
-\subsection{Observed Topology}
+\subsubsection{Observed Topology}
 
 The entire lab operates on a single flat subnet: \textbf{172.21.0.0/18} (broadcast 172.21.63.255, gateway 172.21.0.230). No VLANs, no firewall zones, and no routing boundaries were observed between any device classes. All hosts - from the MES PC to individual PLCs and HMIs - share the same Layer 2 broadcast domain.
 
-\subsection{OT Network}
+\subsubsection{OT Network}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
-\caption{OT Network Devices}
 \begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{@{}llll@{}}
 \toprule
@@ -173,13 +146,13 @@ Power Monitor S6 & 172.21.6.61 & Siemens (10:DF:FC OUI) & Protocol unconfirmed \
 \bottomrule
 \end{tabular}
 \end{adjustbox}
+\caption{OT Network Devices}
 \end{table}
 
-\subsection{IT / MES Network}
+\subsubsection{IT / MES Network}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
-\caption{IT / MES Network Devices}
 \begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{@{}llll@{}}
 \toprule
@@ -193,9 +166,10 @@ CPX-IOT & 172.21.0.210 & Unknown / MQTT? & Festo device; silent during all captu
 \bottomrule
 \end{tabular}
 \end{adjustbox}
+\caption{IT / MES Network Devices}
 \end{table}
 
-\subsection{Engineering Access}
+\subsubsection{Engineering Access}
 
 At least three distinct engineering/programming channels were observed or inferred, none of which pass through any controlled access path:
 
@@ -205,7 +179,7 @@ At least three distinct engineering/programming channels were observed or inferr
 \item \textbf{Kyan\_laptop} (172.21.0.179, MAC a0:ce:c8:f7:ab:c9): Identified by DCP as SIMATIC-PC family. Likely a student or visitor machine admitted to the OT subnet without restriction.
 \end{itemize}
 
-\subsection{External \& Cloud Connections}
+\subsubsection{External \& Cloud Connections}
 
 Two devices raise concerns about external connectivity:
 
@@ -214,7 +188,7 @@ Two devices raise concerns about external connectivity:
 \item \textbf{CPX-IOT} (172.21.0.210): Festo device, OUI 00:0E:F0. Produced zero traffic in all five captures. The name `IOT' and the CPX product line's known cloud connectivity features suggest it may be a cloud gateway (MQTT over internet). Its silence during captures could indicate an idle state or encrypted tunnelled traffic not visible at Layer 2.
 \end{itemize}
 
-\subsection{Flat vs. Segmented Assessment}
+\subsubsection{Flat vs. Segmented Assessment}
 
 The network is entirely flat. There is no evidence of any segmentation mechanism:
 
@@ -228,13 +202,12 @@ The network is entirely flat. There is no evidence of any segmentation mechanism
 
 From a Purdue Model / IEC 62443 zone perspective: the network presents as a single undifferentiated zone spanning Levels 0 through 3, with potential Level 4 exposure via the TP-Link device and CPX-IOT.
 
-\section{Security Weaknesses}
+\subsection{Security Weaknesses}
 
 Findings are rated CRITICAL / HIGH / MEDIUM / LOW based on exploitability and potential impact on process availability, safety, and data integrity.
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
-\caption{Security Weaknesses Summary}
 \begin{tabular}{@{}cll@{}}
 \toprule
 \textbf{ID} & \textbf{Severity} & \textbf{Finding} \\
@@ -255,11 +228,12 @@ F-13 & MEDIUM & Robot arm firmware version unverified \\
 F-14 & LOW & NTP synchronisation provided by MES PC - single point of failure \\
 \bottomrule
 \end{tabular}
+\caption{Security Weaknesses Summary}
 \end{table}
 
-\subsection{F-01 - CRITICAL: Fully Flat /18 Network}
+\subsubsection{F-01 - CRITICAL: Fully Flat /18 Network}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \begin{tabular}{@{}p{0.2\textwidth}p{0.75\textwidth}@{}}
 \toprule
@@ -269,11 +243,12 @@ F-14 & LOW & NTP synchronisation provided by MES PC - single point of failure \\
 \textbf{Recommendation} & Implement a Purdue Model segmentation: Level 0/1 (field), Level 2 (control/HMI), Level 3 (MES), separated by firewalls or managed switch ACLs with an IDMZ between Levels 2 and 3. Each station subnet (172.21.x.0/24) should be a discrete security zone. \\
 \bottomrule
 \end{tabular}
+\caption{Flat network architecture allowing unrestricted communication}
 \end{table}
 
-\subsection{F-02 - CRITICAL: Unrestricted PLC Access}
+\subsubsection{F-02 - CRITICAL: Unrestricted PLC Access}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \begin{tabular}{@{}p{0.2\textwidth}p{0.75\textwidth}@{}}
 \toprule
@@ -283,11 +258,12 @@ F-14 & LOW & NTP synchronisation provided by MES PC - single point of failure \\
 \textbf{Recommendation} & Apply PLC-level access controls: (1) Disable unused services (HTTP web server if not required for operations). (2) Enable TIA Portal's `Know-How Protection' and CPU access protection. (3) Restrict S7comm/102 and OPC-UA/4840 to specific source IPs via firewall ACL. Engineering S7comm access should only be permitted from the engineering VLAN during active maintenance windows. \\
 \bottomrule
 \end{tabular}
+\caption{Unrestricted access to PLC services from any host on the OT subnet}
 \end{table}
 
-\subsection{F-03 - CRITICAL: No MES / OT Separation}
+\subsubsection{F-03 - CRITICAL: No MES / OT Separation}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \begin{tabular}{@{}p{0.2\textwidth}p{0.75\textwidth}@{}}
 \toprule
@@ -297,11 +273,12 @@ F-14 & LOW & NTP synchronisation provided by MES PC - single point of failure \\
 \textbf{Recommendation} & Introduce an IDMZ (Industrial DMZ) between the MES and the OT layer. Only specific, validated protocols should traverse the IDMZ in defined directions: historian replication should be unidirectional (OT→IT only, via a data diode or enforced one-way gateway). Alarm polling from MES to PLC should be proxied through an application-layer gateway rather than a direct TCP session. \\
 \bottomrule
 \end{tabular}
+\caption{Direct communication paths between MES and OT systems without network separation}
 \end{table}
 
-\subsection{F-04 - CRITICAL: Unregistered Device Programming PLCs}
+\subsubsection{F-04 - CRITICAL: Unregistered Device Programming PLCs}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \begin{tabular}{@{}p{0.2\textwidth}p{0.75\textwidth}@{}}
 \toprule
@@ -311,11 +288,12 @@ F-14 & LOW & NTP synchronisation provided by MES PC - single point of failure \\
 \textbf{Recommendation} & Immediately identify this device physically. Cross-reference the MAC with switch port tables. If it is a legitimate engineering station, add it to the inventory and bring it under change control. If it cannot be accounted for, treat as an incident. Engineering access to PLCs should require 802.1X authentication and be logged; S7comm should be blocked at the network layer outside authorised programming windows. \\
 \bottomrule
 \end{tabular}
+\caption{Undocumented device maintaining persistent programming access to PLC S2}
 \end{table}
 
-\subsection{F-05 - HIGH: PLC HTTP Web Servers (Plaintext)}
+\subsubsection{F-05 - HIGH: PLC HTTP Web Servers (Plaintext)}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \begin{tabular}{@{}p{0.2\textwidth}p{0.75\textwidth}@{}}
 \toprule
@@ -325,11 +303,12 @@ F-14 & LOW & NTP synchronisation provided by MES PC - single point of failure \\
 \textbf{Recommendation} & If the PLC web server is used operationally: (1) Enable HTTPS in TIA Portal PLC properties. (2) Enable access control / user authentication on the web server. (3) Restrict HTTP/HTTPS access to the MES PC IP only via firewall ACL. If the web server is not required, disable it entirely in TIA Portal. \\
 \bottomrule
 \end{tabular}
+\caption{PLC web services exposed over unauthenticated plaintext HTTP}
 \end{table}
 
-\subsection{F-06 - HIGH: OPC-UA Accessible Network-Wide}
+\subsubsection{F-06 - HIGH: OPC-UA Accessible Network-Wide}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \begin{tabular}{@{}p{0.2\textwidth}p{0.75\textwidth}@{}}
 \toprule
@@ -339,11 +318,12 @@ F-14 & LOW & NTP synchronisation provided by MES PC - single point of failure \\
 \textbf{Recommendation} & Configure OPC-UA to use SecurityMode=SignAndEncrypt with Basic256Sha256 or better. Deploy client certificates and enforce server-side certificate validation. Firewall OPC-UA/4840 to authorised client IPs only. \\
 \bottomrule
 \end{tabular}
+\caption{Network-wide accessibility of OPC-UA services without verified security controls}
 \end{table}
 
-\subsection{F-07 - HIGH: TP-Link Access Point on OT Subnet}
+\subsubsection{F-07 - HIGH: TP-Link Access Point on OT Subnet}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \begin{tabular}{@{}p{0.2\textwidth}p{0.75\textwidth}@{}}
 \toprule
@@ -353,11 +333,12 @@ F-14 & LOW & NTP synchronisation provided by MES PC - single point of failure \\
 \textbf{Recommendation} & Remove the TP-Link device from the OT subnet immediately or isolate it on a separate management VLAN with no OT reachability. Audit the device's WAN/port-forwarding configuration. If internet access is required in the lab for administrative purposes, it must traverse a firewall on a separate IT network segment. \\
 \bottomrule
 \end{tabular}
+\caption{TP-Link access point present on the operational technology network}
 \end{table}
 
-\subsection{F-08 - HIGH: Visitor/Unvetted Laptop on OT Network}
+\subsubsection{F-08 - HIGH: Visitor/Unvetted Laptop on OT Network}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \begin{tabular}{@{}p{0.2\textwidth}p{0.75\textwidth}@{}}
 \toprule
@@ -367,11 +348,12 @@ F-14 & LOW & NTP synchronisation provided by MES PC - single point of failure \\
 \textbf{Recommendation} & Implement network admission control (802.1X or MAC allowlisting on the lab switches). Visitor/student devices should only access a dedicated quarantine VLAN with no OT reachability. If PROFINET access is needed for lab exercises, use a dedicated lab PC, not personal devices. \\
 \bottomrule
 \end{tabular}
+\caption{Visitor laptop connected directly to the live OT environment}
 \end{table}
 
-\subsection{F-09 - HIGH: VMware Host with Unknown VM Roles}
+\subsubsection{F-09 - HIGH: VMware Host with Unknown VM Roles}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \begin{tabular}{@{}p{0.2\textwidth}p{0.75\textwidth}@{}}
 \toprule
@@ -381,11 +363,12 @@ F-14 & LOW & NTP synchronisation provided by MES PC - single point of failure \\
 \textbf{Recommendation} & Document all VMs on this host. Determine whether any VM has internet connectivity and isolate it from OT. Consider whether VMware is appropriate on the OT subnet; if virtualisation is needed, use a hypervisor specifically evaluated for OT contexts. \\
 \bottomrule
 \end{tabular}
+\caption{VMware host operating on the OT subnet with undocumented virtual machines}
 \end{table}
 
-\subsection{F-10 through F-15 - Medium / Low Findings}
+\subsubsection{F-10 through F-15 - Medium / Low Findings}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \caption{Medium and Low Severity Findings}
 \begin{adjustbox}{max width=\textwidth}
@@ -402,11 +385,12 @@ F-15 & LOW & Cross-reference MAC addresses with switch ARP tables and physically
 \bottomrule
 \end{tabular}
 \end{adjustbox}
+
 \end{table}
 
-\section{Standards Alignment Summary}
+\subsection{Standards Alignment Summary}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \caption{Standards Compliance Summary}
 \begin{adjustbox}{max width=\textwidth}
@@ -429,5 +413,3 @@ Zero Trust & No implicit trust from network location & NOT MET - trust granted b
 \end{tabular}
 \end{adjustbox}
 \end{table}
-
-\end{document}
