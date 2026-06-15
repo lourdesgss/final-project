@@ -114,15 +114,29 @@ Satisfies IEC 62443-3-3 SR 5.1 and the least privilege principle.
 \section{Network Implementation}
 TODO: DIAGRAM HERE
 
-\subsection{VLAN Segmentation}
+\subsection{VLAN Segmentation \& Restricted Routing}
 The redesigned factory network is implemented using VLAN-based segmentation 
 on managed industrial switches. Each security zone is assigned a dedicated 
 VLAN and IP subnet. Inter-VLAN communication is not performed by the switch 
 itself but is routed through a central industrial firewall.
-The firewall acts as the default gateway for all VLANs and enforces security 
+The firewall has one tagged VLAN port for each VLAN - which is a default gateway
+for each node withing that VLAN.
+The firewall enforces security 
 policies between zones. A VLAN trunk connection between the firewall and the 
 managed switch transports traffic for all security zones while preserving 
 logical separation through IEEE 802.1Q VLAN tagging. \\
+Because the switch never bridges VLANs, the only path between any two zones 
+is through the firewall. The firewall applies a default-deny policy: 
+traffic between VLANs is dropped unless a rule explicitly permits it. 
+Traffic within a VLAN (for example PLC-to-HMI Profinet inside one station) 
+is switched locally and never reaches the firewall. 
+Profinet RT traffic is Layer 2 only and is confined to its station VLAN; 
+it is never routed across the firewall.
+This realises the four logical firewall boundaries 
+(Edge, IT–IDMZ, IDMZ–OT Cell, OT Cell–OT Production) on a single physical 
+firewall, where each boundary corresponds to a rule set 
+between the relevant VLAN interfaces. 
+It satisfies IEC 62443-3-3 SR 5.1 (Restricted Data Flow) and SR 5.2 (Zone Boundary Protection).
 
 \renewcommand{\arraystretch}{1.3} % 30% more row height
 \begin{tabularx}{\textwidth}{>{\bfseries}p{2.5cm} X X}
@@ -140,6 +154,28 @@ logical separation through IEEE 802.1Q VLAN tagging. \\
     106 & OT Prod - Station 6 & PLC6, HMI6, Festo controller \\
 \end{tabularx}
 
-\subsection{Restricted Routing}
+\subsection{Justified Protocols Routes}
+The permitted flows exists to allow a required operational
+functionality - all other are denied.
+The IT node never reaches an OT node directly. All IT to OT connections are terminated
+and re-innitiated in the IDMZ proxy to the other side. 
+
+\renewcommand{\arraystretch}{1.3} % 30% more row height
+\begin{tabularx}{\textwidth}{p{2.5cm} X X X}
+    \textbf{Flow} & \textbf{Path} & \textbf{Protocol/Port} & \textbf{Justification}  \vspace{0.5em}\\
+\toprule
+    Process Data, MES to PLC & MES to OPC UA proxy to PLC's  OPC UA server & OPC UA/TCP4840 & MES reads/writes process data. MES connection is terminated in OPCUA proxy. No direct connection between MES and PLC. \\
+    \midrule
+    Web data, MES to OT nodes & MES to Nginx to OT nodes web server & HTTPS/TCP443 (IT side), HTTP/TCP80 (OT side) & Required Web data from OT nodes is fetched by Nginx reverse proxy instead of MES directly - plain text HTTP stays in OT zone, and Nginx connects to MES through HTTPS. \\
+    \midrule
+    Telemetry, MQTT CVX device to MES & MQTT CVX to MQTT broker to MES (subscribe) & MQTT/TCP8883 TLS & OT only publish, IT only subscribe\\
+    \midrule
+    PLC/HMI programming & Engineering Workstation
+
+
+\end{tabularx}
+
+
+
 \end{document}
 
