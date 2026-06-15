@@ -1,0 +1,79 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{float}
+\setlength{\parindent}{0pt}
+\usepackage{caption}
+\usepackage{fancyvrb}
+\usepackage{tcolorbox}
+\usepackage[a4paper, total={6in, 8.5in}]{geometry}
+\setlength{\footskip}{80pt}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+
+\title{Project - Protocol Hardening}
+\author{Aleksander Kłap}
+\date{08.06.2026}
+
+\begin{document}
+
+\maketitle
+\pagebreak
+
+\section{Protocol Hardening}
+The redesign (Chapter 7) controls where each protocol may flow. 
+This chapter defines how each protocol is secured on the device and conduit level.
+
+\subsection{Profinet}
+Profinet has no authentication or encryption features, so it cannot be hardened at the 
+protocol level. Instead it is secured by isolation.
+\begin{itemize}
+    \item Layer 2 only - Profinet stays inside each OT Production station (VLAN 101 - 106).
+        It is never routed, and never crosses through firewall. Even if routing would be 
+        executed (through the attack) router would drop the communication.
+    \item No inter-station Profinet communication - Each PLC talks Profinet (with I/O, HMI) only 
+        within own VLAN.
+    \item DCP Set disabled - desible DCP Set through TIA Portal for devices that support this feature.
+        This prevents rename/reconfigure attacks through DCP.
+\end{itemize}
+
+\subsection{OPC UA}
+OPC UA is the only routed OT data protocol. Hardening is specified in SR-03. \textit{(see Sercurity Requirements 6.1 TODO)}
+\begin{itemize}
+    \item Security mode Sign\&Encrypt - Security policy Basic256Sha256. Mode 'none' is disabled
+        on all PLC and Festo Controllers servers.
+    \item Certificate authentication - Clients (OPC UA proxy, Cobot/MLvisionPC) authenticate with application
+        certificates. Annonymous and username/password sessions are disabled.
+    \item Scoped access - The Cobot/MLvisionPC can reach only PLC2 on Station 2, and no other PLC's.
+\end{itemize}
+
+\subsection{MQTT}
+MQTT is used by the Festo CXV device for telemetry. It's hardening is specified in SR-04 \textit{(see Sercurity Requirements 6.1 TODO)}
+\begin{itemize}
+    \item MQTT broker in IDMZ - The MQTT CXV device publishes only to a dedicated MQTT broker placed in IDMZ. IT nodes 
+        can only subscribe to the broker. No direct OT-IT MQTT path exists.
+    \item TLS 1.2+ - TLS encryption enforced on all MQTT connections.
+    \item Client certificates - MQTT CXV device must authenticate with certificate for publish connection to the broker. No annonymous connections allowed.
+    \item Topic ACL's - THe MQTT CXV device may publish only to it's own topics. IT nodes (MES) cannot publish to the OT topics.
+\end{itemize}
+
+\subsection{HTTP/Web Interfaces}
+Some OT devices need to expose plaintext HTTP web interfaces. Hardening is specified in SR-05 \textit{(see Security Requirements 6.1 TODO)}
+
+\begin{itemize}
+    \item Disabled by default - All HTTP servers are disabled unless strictly needed for operational functionality.
+    \item Reverse proxy - Where web access is needed (e.g. MES reading the PLC alarm table), the MES connects to the Nginx reverse proxy in the IDMZ over HTTPS/TLS 1.2+. Nginx terminates the connection, fetches the OT-side resource, and returns it. Plaintext HTTP stays inside the OT zone.
+    \item Access restriction - Ngnix authenticate requests, logs them and blocks any OT server that should not be reached from IT zone.
+        Firewall rules restrict web access to the Nginx TCP/IP port only.
+\end{itemize}
+
+\subsection{S7comm+ Engineering Access}
+S7comm+ connection is used only for programming PLC's and HMI's. Hardening is sepcified in SR-06 and SR-07 TODO link to SR's
+\begin{itemize}
+    \item Single source - S7comm+/TCP102 to any PLC or HMI is allowed only from the dedicated Engineering Workstation in VLAN40.
+    \item Conduit controll - Engineering Worksation S7comm+ connection initialization passes through the firewall, enforcing restriction of Engineering Station to PLC's and HMI's only.
+    \item User Authentication - PLC's and HMI's access requires individual login/password authentication with role separation (implemented in TIA portal).
+\end{itemize}
+
+\end{document}
+
