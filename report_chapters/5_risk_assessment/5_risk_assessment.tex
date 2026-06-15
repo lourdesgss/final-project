@@ -1,0 +1,46 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{array}
+\usepackage{adjustbox}
+
+\geometry{a4paper, margin=1in}
+
+\title{ICS Risk Assessment}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Risk Matrix}
+
+\begin{table}[h!]
+\centering
+\caption{ICS Threat Risk Assessment}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Threat} & \textbf{Likelihood} & \textbf{Impact (Safety / Production / Education)} & \textbf{Risk Score} & \textbf{Priority} \\
+\midrule
+Engineering PC malware infection & High (3) & Critical (4): full compromise of control layer, persistent attacker access & 12 & Critical \\
+PLC logic manipulation & Medium (2) & Critical (4): unsafe actuator behaviour, production shutdown, learning disruption & 8 & High \\
+Unauthorized engineering access (insider misuse) & Medium (2) & Critical (4): silent logic changes, safety bypass possible & 8 & High \\
+SCADA/HMI denial of service & Medium (2) & High (3): loss of operator visibility, production interruption & 6 & Medium \\
+Network flooding / traffic storm & Medium (2) & High (3): loss of PLC communication, system downtime & 6 & Medium \\
+MES production manipulation & Medium (2) & High (3): incorrect production runs, financial + operational impact & 6 & Medium \\
+PLC configuration/data exfiltration & Medium (2) & High (3): loss of intellectual property + enables future attacks & 6 & Medium \\
+Rogue device in network & Medium (2) & Medium (2): reconnaissance, lateral movement & 4 & Medium \\
+Webshop/API data manipulation & Medium (2) & Medium (2): incorrect orders, indirect production issues & 4 & Medium \\
+PLC command spoofing & Low (1) & High (3): incorrect control actions, potential physical instability & 3 & Low \\
+Session hijacking (SCADA) & Low (1) & High (3): stealth control manipulation, loss of trust in system & 3 & Low \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\end{document}

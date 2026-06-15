@@ -16,7 +16,6 @@
 | Smart Switch            | Switch             | Netgear GS305E / V1.0.0.16 | 172.21.0.196                | 28:94:01:67:5b:8b                     | ?                     | ?                                                      |
 | Router or AP            | Router             | TP-Link router             | 172.21.0.200                | 20:23:51:41:a2:88                     | UDP                   | Router?                                                |
 
-
 ---
 
 ## Station 0 – Robot Arm (172.21.0.x)
