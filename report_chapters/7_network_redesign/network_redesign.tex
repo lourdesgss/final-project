@@ -22,14 +22,11 @@
 
 \section{Logical Network Redesign}
 
-TODO: IN PROGRESS
-TODO: DIAGRAM HERE
-
-%%\begin{figure}[H]
-%%    \centering
-%%    \includegraphics[width=1\textwidth]{img/conduit_diagram.pdf}
-%%    \caption{Zone \& Conduit Diagram}
-%%\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/logic_redesign.pdf}
+    \caption{Zone \& Conduit Diagram}
+\end{figure}
 
 The current flat /18 network is replaced with a layered zone architecture 
 based on the IEC 62443 zone and conduit model. 
@@ -94,7 +91,7 @@ indbound traffic from OT. Satisfies IEC 62443-2-1 §4.3.4 and ISO/IEC 27001 A.12
 
 \subsection{Firewalls}
 This section only describres briefly the high-level purpose of the firewall nodes.
-Further specification on permitted conduits is described in TODO
+Further specification on permitted conduits is described in 7.2.2.
 \subsubsection{Edge Firewall}
 Terminates all VPN tunnels from remote engineers and vendor support, 
 enforces MFA before any traffic enters the IT zone, and blocks all unsolicited inbound 
@@ -112,7 +109,12 @@ it remains Layer 2 within each station. All other traffic denied.
 Satisfies IEC 62443-3-3 SR 5.1 and the least privilege principle.
 
 \section{Network Implementation}
-TODO: DIAGRAM HERE
+The Network Implementation diagram is appended to the report for better visibility.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/redesign_iml.pdf}
+    \caption{Network Implementation}
+\end{figure}
 
 \subsection{VLAN Segmentation \& Restricted Routing}
 The redesigned factory network is implemented using VLAN-based segmentation 
@@ -154,11 +156,12 @@ It satisfies IEC 62443-3-3 SR 5.1 (Restricted Data Flow) and SR 5.2 (Zone Bounda
     106 & OT Prod - Station 6 & PLC6, HMI6, Festo controller \\
 \end{tabularx}
 
+\pagebreak
 \subsection{Justified Protocols Routes}
 The permitted flows exists to allow a required operational
 functionality - all other are denied.
 The IT node never reaches an OT node directly. All IT to OT connections are terminated
-and re-innitiated in the IDMZ proxy to the other side. 
+and re-innitiated in the IDMZ proxy to the other side. \\ \vspace{1em}
 
 \renewcommand{\arraystretch}{1.3} % 30% more row height
 \begin{tabularx}{\textwidth}{p{2.5cm} X X X}
@@ -170,12 +173,16 @@ and re-innitiated in the IDMZ proxy to the other side.
     \midrule
     Telemetry, MQTT CVX device to MES & MQTT CVX to MQTT broker to MES (subscribe) & MQTT/TCP8883 TLS & OT only publish, IT only subscribe\\
     \midrule
-    PLC/HMI programming & Engineering Workstation
-
-
+    PLC/HMI programming & Engineering Workstation to HMI's/PLC's & S7comm+/TCP102 & Programming only from the dedicated workstation in the engineering VLAN \\
+    \midrule
+    Cobot process data & Cobot/MLvisionPC to PLC2 & OPC UA/TCP4840 & Vision PC needs PLC2 data only; scoped to Station 2 \\
+    \midrule
+    Time synchronization & All devices to NTP server & NTP/UDP123 & Single time source for all OT devices \\
+    \midrule
+    Logging & All devices to Syslog collector & Syslog/UDP514 & Centralised log collection for monitoring \\
+    \midrule
+    Webshop & Internet clients to MES & HTTPS/TCP443 & Public webshop terminates in IT, no OT reachability \\
 \end{tabularx}
-
-
 
 \end{document}
 
