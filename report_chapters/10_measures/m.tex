@@ -1,0 +1,60 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{float}
+\setlength{\parindent}{0pt}
+\usepackage{caption}
+\usepackage{fancyvrb}
+\usepackage{tcolorbox}
+\usepackage[a4paper, total={6in, 8.5in}]{geometry}
+\setlength{\footskip}{80pt}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+
+\title{Project - Organizational \& Procedural Measures}
+\author{Aleksander Kłap}
+\date{08.06.2026}
+
+\begin{document}
+
+\maketitle
+\pagebreak
+
+\section{Organizational \& Procedural Measures}
+\subsection{User Roles}
+Three roles, enforced on PLCs, HMIs, controllers, and the robot (SR-06.2). All access uses individual accounts — no shared logins. \\
+
+\renewcommand{\arraystretch}{1.3} % 30% more row height
+\begin{tabularx}{\textwidth}{p{2.5cm} X X}
+    \textbf{Role} & \textbf{Permissions} & \textbf{Typical User} \vspace{0.5em}\\
+\toprule
+    Operator & Monitor HMIs, access Web Interfaces. No configuration or program changes. & Student running a session \\
+    \midrule
+    Engineer & Upload/modify PLC programs and parameters, configure HMIs. Login through Engineering Workstation only. & Lab technician / Teacher \\
+    \midrule
+    Administrator &  Device configuration, user and certificate management, firewall and switch configuration. &  Lab administrator \\
+    \bottomrule
+\end{tabularx}
+\vspace{1em}
+
+\subsection{Backup Strategy}
+Backup Strategy is specified in SR-10 (see TODO).
+
+\begin{itemize}
+    \item PLC programs, HMI configurations, and controller configs are backed up after every change.
+    \item The MES database is backed up daily.
+    \item Backups go to dedicated backup storage (VLAN 10) and a copy is kept offline.
+    \item Recovery procedures are documented and tested at least twice per year.
+\end{itemize}
+
+\subsection{Incident Response}
+\begin{itemize}
+    \item Detect — Anomalies surface from the Syslog collector and firewall denied-traffic logs (SR-08). Operators report unexpected station behaviour immediately.
+    \item Contain — Isolate the affected device or VLAN (disconnect or firewall block). Stop the station if process safety is in doubt.
+    \item Preserve — Keep logs and alarms.
+    \item Recover — Restore PLC/HMI config or MES data from the last known-good backup (SR-10.4).
+    \item Document — Record what happened, the cause, and the fix. 
+\end{itemize}
+
+\end{document}
+
