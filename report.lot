@@ -1,0 +1,23 @@
+\babel@toc {english}{}\relax 
+\contentsline {table}{\numberline {1}{\ignorespaces Assessment Scope Key Findings}}{5}{table.caption.12}%
+\contentsline {table}{\numberline {2}{\ignorespaces IEC 62443 Violations}}{5}{table.caption.14}%
+\contentsline {table}{\numberline {3}{\ignorespaces ISO/IEC 27001 Violations}}{6}{table.caption.16}%
+\contentsline {table}{\numberline {4}{\ignorespaces NIS2 Directive Violations}}{6}{table.caption.18}%
+\contentsline {table}{\numberline {5}{\ignorespaces Defense-in-Depth Violations}}{6}{table.caption.20}%
+\contentsline {table}{\numberline {6}{\ignorespaces Least Privilege \& Zero Trust Violations}}{7}{table.caption.22}%
+\contentsline {table}{\numberline {7}{\ignorespaces OT Network Devices}}{7}{table.caption.25}%
+\contentsline {table}{\numberline {8}{\ignorespaces IT / MES Network Devices}}{7}{table.caption.27}%
+\contentsline {table}{\numberline {9}{\ignorespaces Security Weaknesses Summary}}{9}{table.caption.31}%
+\contentsline {table}{\numberline {10}{\ignorespaces Flat network architecture allowing unrestricted communication}}{9}{table.caption.33}%
+\contentsline {table}{\numberline {11}{\ignorespaces Unrestricted access to PLC services from any host on the OT subnet}}{10}{table.caption.35}%
+\contentsline {table}{\numberline {12}{\ignorespaces Direct communication paths between MES and OT systems without network separation}}{10}{table.caption.37}%
+\contentsline {table}{\numberline {13}{\ignorespaces Undocumented device maintaining persistent programming access to PLC S2}}{11}{table.caption.39}%
+\contentsline {table}{\numberline {14}{\ignorespaces PLC web services exposed over unauthenticated plaintext HTTP}}{11}{table.caption.41}%
+\contentsline {table}{\numberline {15}{\ignorespaces Network-wide accessibility of OPC-UA services without verified security controls}}{12}{table.caption.43}%
+\contentsline {table}{\numberline {16}{\ignorespaces TP-Link access point present on the operational technology network}}{12}{table.caption.45}%
+\contentsline {table}{\numberline {17}{\ignorespaces Visitor laptop connected directly to the live OT environment}}{13}{table.caption.47}%
+\contentsline {table}{\numberline {18}{\ignorespaces VMware host operating on the OT subnet with undocumented virtual machines}}{13}{table.caption.49}%
+\contentsline {table}{\numberline {19}{\ignorespaces Medium and Low Severity Findings}}{14}{table.caption.51}%
+\contentsline {table}{\numberline {20}{\ignorespaces Standards Compliance Summary}}{15}{table.caption.52}%
+\contentsline {table}{\numberline {21}{\ignorespaces ICS Threat Analysis Matrix (IEC 62443-based)}}{17}{table.caption.58}%
+\contentsline {table}{\numberline {22}{\ignorespaces ICS Threat Risk Assessment}}{18}{table.caption.59}%
