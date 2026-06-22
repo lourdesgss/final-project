@@ -1,0 +1,101 @@
+\section{Threat and Risk Analysis}
+
+\subsection{Threat Modelling}
+
+This analysis follows principles from IEC 62443, which defines a structured approach to identifying threats in Industrial Control Systems (ICS) based on zones, conduits, and system integrity requirements.
+
+The assessment uses a simplified STRIDE model adapted for ICS environments and considers three attacker profiles: external attackers, insiders, and opportunistic student-level actors within a lab or training environment.
+
+Industrial systems are particularly sensitive because compromise is not limited to data loss; manipulation can directly affect physical processes, safety constraints, and production continuity.
+
+\subsubsection{Attacker Profiles}
+
+\paragraph{External attacker}
+Typically motivated by financial gain (ransomware), disruption, or opportunistic exploitation of exposed services. Often relies on phishing, misconfigured remote access, or known vulnerabilities.
+
+\paragraph{Insider}
+A user with legitimate access (operator, engineer, contractor). Capable of bypassing many perimeter controls and posing the highest risk for silent tampering.
+
+\paragraph{Student / opportunistic actor}
+Low sophistication but high physical or local access in lab environments. Often responsible for accidental misconfigurations or simple exploitation of weak segmentation.
+
+\subsection{Threat Scenarios}
+
+\subsubsection{PLC manipulation}
+An attacker gains access to the engineering environment or PLC network and modifies control logic (e.g., ladder logic, function blocks, or setpoints). This may result in unsafe actuator behaviour, incorrect process thresholds, or bypassed interlocks.
+
+External attackers typically achieve this via compromised engineering workstations or remote access abuse. Insiders can perform direct modifications with minimal detection risk.
+
+\subsubsection{Denial of Service (DoS)}
+An attacker disrupts communication between PLCs, SCADA, and HMI systems by flooding network segments, exploiting protocol weaknesses, or overwhelming control servers.
+
+Industrial protocols such as Modbus/TCP or OPC may lack robust authentication or rate limiting, making them vulnerable to traffic-based disruption.
+
+\subsubsection{Unauthorized device access}
+A rogue device is introduced into the control network, either physically or via network misconfiguration. Once connected, it can scan, impersonate trusted nodes, or interact with PLC services.
+
+This scenario is particularly realistic in lab environments where physical access is possible.
+
+\subsubsection{Malware infection via Engineering PC}
+The Engineering Workstation is compromised via phishing, malicious downloads, or removable media. Once infected, attackers can pivot into PLC networks, extract logic files, or deploy malicious firmware changes.
+
+This is one of the most critical ICS attack vectors because the Engineering PC often has unrestricted access to control assets.
+
+\subsubsection{Data manipulation via MES / Webshop systems}
+Attacks targeting Manufacturing Execution Systems (MES) or web interfaces allow modification of production orders, process parameters, or scheduling data.
+
+This can lead to incorrect production batches, financial losses, or downstream process disruption in physical systems.
+
+\subsection{Threat Table}
+
+\begin{table}[h!]
+\centering
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{@{}lcccccl@{}}
+\toprule
+\textbf{Asset} & \textbf{Threat} & \textbf{Attacker} & \textbf{STRIDE Category} & \textbf{Impact} & \textbf{Example Scenario} \\
+\midrule
+Engineering PC & Malware infection & External / Student & Information Disclosure, Tampering & Critical & Phishing leads to PLC compromise \\
+Engineering PC & Unauthorized access & Insider & Elevation of Privilege & Critical & Engineer account reused or misused \\
+PLCs & Logic manipulation & External / Insider & Tampering, Elevation of Privilege & High & Modified ladder logic alters actuator behaviour \\
+PLCs & Command injection & Student / External & Spoofing & High & Fake control commands sent via Modbus \\
+SCADA/HMI & Session hijacking & External & Spoofing & High & Attacker impersonates operator session \\
+Network Segments & Traffic flooding & External & Denial of Service & High & Broadcast storm disrupts PLC communication \\
+PLC Network & Configuration exfiltration & External & Information Disclosure & High & PLC logic downloaded and analysed \\
+MES System & Production manipulation & External / Insider & Tampering & High & Batch parameters altered remotely \\
+SCADA/HMI & Denial of service & External & Denial of Service & Medium–High & Flooding causes operator loss of visibility \\
+Webshop/API & Data modification & External & Tampering, Information Disclosure & Medium–High & Order data changed, affecting production \\
+Network Switches & Rogue device connection & Student / Insider & Spoofing & Medium & Unauthorized laptop joins control VLAN \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\caption{ICS Threat Analysis Matrix (IEC 62443-based)}
+\end{table}
+
+
+\subsection{Risk Matrix}
+
+\begin{table}[H]
+\centering
+
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Threat} & \textbf{Likelihood} & \textbf{Impact (Safety / Production / Education)} & \textbf{Risk Score} & \textbf{Priority} \\
+\midrule
+Engineering PC malware infection & High (3) & Critical (4): full compromise of control layer, persistent attacker access & 12 & Critical \\
+PLC logic manipulation & Medium (2) & Critical (4): unsafe actuator behaviour, production shutdown, learning disruption & 8 & High \\
+Unauthorized engineering access (insider misuse) & Medium (2) & Critical (4): silent logic changes, safety bypass possible & 8 & High \\
+SCADA/HMI denial of service & Medium (2) & High (3): loss of operator visibility, production interruption & 6 & Medium \\
+Network flooding / traffic storm & Medium (2) & High (3): loss of PLC communication, system downtime & 6 & Medium \\
+MES production manipulation & Medium (2) & High (3): incorrect production runs, financial + operational impact & 6 & Medium \\
+PLC configuration/data exfiltration & Medium (2) & High (3): loss of intellectual property + enables future attacks & 6 & Medium \\
+Rogue device in network & Medium (2) & Medium (2): reconnaissance, lateral movement & 4 & Medium \\
+Webshop/API data manipulation & Medium (2) & Medium (2): incorrect orders, indirect production issues & 4 & Medium \\
+PLC command spoofing & Low (1) & High (3): incorrect control actions, potential physical instability & 3 & Low \\
+Session hijacking (SCADA) & Low (1) & High (3): stealth control manipulation, loss of trust in system & 3 & Low \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\caption{ICS Threat Risk Assessment}
+\end{table}

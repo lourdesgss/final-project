@@ -1,0 +1,239 @@
+\section{As-Is Architecture}
+
+\subsection{Communications Mapping}
+
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+{\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.05}
+\begin{longtable}{L{2.1cm} L{2cm} L{1.7cm} L{2.6cm} L{2.8cm}}
+\toprule
+\textbf{Source} & \textbf{Destination} & \textbf{Protocol/Port} & \textbf{Direction} & \textbf{Purpose} \\
+\midrule \endhead
+MES & PLC & OPC-UA / 4840 & MES (client) $\to$ PLC (server) & Read/write process data \\
+HMI / PLC & MES & NTP / 123 & Clients $\to$ NTP server & Time sync \\
+Internet & MES & HTTPS / 443 & Internet $\to$ MES & Webshop orders \\
+Cobot-ML PC & Camera & HTTP / 80 & Cobot-ML $\to$ Camera & Fetch inspection image \\
+Cobot-ML PC & PLC & OPC-UA / 4840 & Cobot-ML $\to$ PLC & Process data from image \\
+PLC & IO Device & PROFINET (L2) & PLC $\to$ IO & Cyclic I/O exchange \\
+Festo Ctrl & CPX-IoT (CVX) & MQTT / 1883 & Ctrl $\to$ CVX & Publish aggregated data \\
+RFID Reader & PLC & PROFINET (L2) & Reader $\to$ PLC & RFID identification \\
+PLC & Robot Arm & PROFINET (L2) & PLC $\to$ Robot & Motion commands / status \\
+HMI & PLC & S7comm+ / 102 & HMI $\to$ PLC & Read/write panel tags \\
+MES PC & PLC & S7comm+ / 102 & MES $\to$ PLC & PLC programming \\
+MES PC & HMI & S7comm+ / 102 & MES $\to$ HMI & HMI programming/config \\
+Power Monitor & Festo Ctrl & Modbus / 502 & Monitor $\to$ Ctrl & Power consumption data \\
+\bottomrule
+\end{longtable}
+}
+
+
+\subsection{Trust Zones and Segmentation}
+
+This assessment evaluates the security posture of the Festo Smart Factory Lab OT/ICS network. The lab comprises six manufacturing stations (conveyor, sorting, camera inspection, magazine, press, oven) plus a robot arm cell, interconnected through Siemens S7-1500 PLCs, Festo CPX controllers, MTP700 HMIs, and a centralised MES PC.
+
+The assessment is based on passive packet capture analysis (5 captures, ~55,000 frames), active DCP Identify-All output (14 devices), and nmap host discovery (21 live hosts across 172.21.0.0/18).
+
+\begin{table}[h!]
+\centering
+
+\begin{tabular}{@{}l>{\raggedright\arraybackslash}p{0.6\textwidth}@{}}
+\toprule
+\textbf{Assessment Scope} & \textbf{Key Finding} \\
+\midrule
+Network segmentation & NONE — fully flat /18 subnet \\
+PLC access control & NONE — all PLCs reachable from any host \\
+MES / OT separation & NONE — MES PC shares subnet with PLCs \\
+Engineering access control & NONE — uncontrolled, incl. unregistered devices \\
+Unaccounted assets & 6+ devices not in original inventory \\
+Wireless / external exposure & TP-Link AP present on OT subnet \\
+\bottomrule
+\end{tabular}
+\caption{Assessment Scope Key Findings}
+\end{table}
+
+The overall security posture is assessed as \textbf{CRITICAL}. The network presents no meaningful barrier between IT systems, engineering workstations, visitor devices, and live industrial control equipment. A single compromised host on the subnet has unrestricted access to all PLCs and HMIs.
+
+\subsubsection{Regulatory and Standards Alignment}
+
+\paragraph{IEC 62443 Violations}
+
+\begin{table}[H]
+\centering
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{@{}p{0.55\textwidth}p{0.4\textwidth}@{}}
+\toprule
+\textbf{Security Issue Found} & \textbf{Standard Violated} \\
+\midrule
+No zones or conduits — entire network is one implicit zone with no conduit controls & IEC 62443-1-1 (Zone \& Conduit Model) \\
+Incomplete asset inventory (6+ undocumented devices during active operation) & IEC 62443-2-1 (CSMS — Asset Inventory) \\
+No authentication on PLC web servers or PROFINET & IEC 62443-3-3 / SR 1.1 (Human User Identification \& Authentication) \\
+No controlled access path for remote engineering & IEC 62443-3-3 / SR 2.6 (Remote Session Termination) \\
+No network segmentation or zone boundary protection & IEC 62443-3-3 / SR 5.1 \& SR 5.2 (Network Segmentation \& Zone Boundary Protection) \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\caption{IEC 62443 Violations}
+\end{table}
+
+\paragraph{ISO/IEC 27001 Violations}
+
+\begin{table}[H]
+\centering
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{@{}p{0.55\textwidth}p{0.4\textwidth}@{}}
+\toprule
+\textbf{Security Issue Found} & \textbf{Standard Violated} \\
+\midrule
+Six devices absent from inventory, including one actively programming PLCs via S7comm (172.21.0.156) & Clause 8.1 / Annex A.8 (Asset Management) \\
+Flat /18 subnet with no separation between services, users, or systems & Annex A.8.22 (Network Segmentation) \\
+No firewall, ACL, or VLAN between MES-level and field-level devices & Annex A.8.20 (Network Security) \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\caption{ISO/IEC 27001 Violations}
+\end{table}
+
+\paragraph{NIS2 Directive Violations}
+
+\begin{table}[H]
+\centering
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{@{}p{0.55\textwidth}p{0.4\textwidth}@{}}
+\toprule
+\textbf{Security Issue Found} & \textbf{Standard Violated} \\
+\midrule
+No network segmentation, access control, or asset management in lab network & Article 21 — Cybersecurity Risk Management \\
+Devices from multiple vendors (Siemens, Festo, Turck, SensoPart, TP-Link) with unknown/unverified firmware & Article 21(2)(e) — Supply Chain Security \\
+Visitor/external laptop (Kyan\_laptop, a0:ce:c8:f7:ab:c9) on live OT subnet — no network admission controls & Article 21(2)(h) — Basic Cyber Hygiene \& Training \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\caption{NIS2 Directive Violations}
+\end{table}
+
+\paragraph{Defense-in-Depth Violations}
+
+\begin{table}[H]
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{@{}p{0.55\textwidth}p{0.4\textwidth}@{}}
+\toprule
+\textbf{Security Issue Found} & \textbf{Standard Violated} \\
+\midrule
+Only one perimeter exists (edge of /18 subnet) — no segmentation between IT and OT & Defense-in-Depth — Multiple Independent Controls \\
+No DMZ or IDMZ between MES and field layers & Defense-in-Depth — Layered Architecture \\
+No per-PLC firewall or ACL & Defense-in-Depth — Compartmentalization \\
+No authentication on PROFINET, S7comm, or PLC web servers & Defense-in-Depth — Authentication Layer \\
+Single perimeter breach allows unrestricted lateral movement to all PLCs & Defense-in-Depth — No Fallback Controls \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\caption{Defense-in-Depth Violations}
+\end{table}
+
+\paragraph{}{Least Privilege \& Zero Trust Violations}
+
+\begin{table}[H]
+\centering
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{@{}p{0.55\textwidth}p{0.4\textwidth}@{}}
+\toprule
+\textbf{Security Issue Found} & \textbf{Standard Violated} \\
+\midrule
+MES PC (172.21.0.90) can reach every other PLC, not just the one it needs (PLC S2) & Least Privilege — Only Necessary Access \\
+MES PC is reachable from PLCs via NTP and can poll HMIs unnecessarily & Least Privilege — Unrestricted Bidirectional Access \\
+Engineering PCs have persistent S7comm access instead of only during programming windows & Least Privilege — Continuous Unnecessary Access \\
+PC Cobot-ML (172.21.1.90) can reach PLCs S1, S3–S6 despite needing only OPC-UA to PLC S2 & Least Privilege — Default Deny / Explicit Allow \\
+Every device trusts every other device based on subnet membership, not verified identity or role & Zero Trust — No Implicit Trust Based on Network Location \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\caption{Least Privilege \& Zero Trust Violations} \end{table}
+
+
+
+\subsection{Network Identification}
+
+\subsubsection{Observed Topology}
+
+The entire lab operates on a single flat subnet: \textbf{172.21.0.0/18} (broadcast 172.21.63.255, gateway 172.21.0.230). No VLANs, no firewall zones, and no routing boundaries were observed between any device classes. All hosts - from the MES PC to individual PLCs and HMIs - share the same Layer 2 broadcast domain.
+
+\subsubsection{OT Network}
+
+\begin{table}[H]
+\centering
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Device} & \textbf{IP} & \textbf{Type} & \textbf{Notes} \\
+\midrule
+PLC S1–S6 & 172.21.x.1 & Siemens S7-1500 PLCs & Process controllers, each exposing HTTP/80, OPC-UA/4840, S7comm/102, PROFINET \\
+HMI S1–S6 & 172.21.x.10 & Siemens MTP700 & Operator panels, PROFINET \\
+Robot Arm & 172.21.1.40 & Universal Robots UR3e & Cobot, firmware unconfirmed \\
+rfidboxcobot & 172.21.1.20 & Turck TBEN-S2-2RFID & RFID reader, PROFINET \\
+Sensor S3 & 172.21.3.50 & SensoPart & Vision sensor, HTTP \\
+ET200SP IO S2 & 172.21.2.100 & Siemens IM155-6PN/2 HF & PROFINET IO device, FW V4.2.4 \\
+CPX Controller S2 & 172.21.2.60 & Festo CPX & Protocol unconfirmed \\
+CPX Controller S6 & 172.21.6.60 & Festo CPX & PROFINET RT cyclic confirmed (UDP 1740–1743) \\
+Power Monitor S2 & 172.21.2.61 & Siemens (10:DF:FC OUI) & Protocol unconfirmed \\
+Power Monitor S6 & 172.21.6.61 & Siemens (10:DF:FC OUI) & Protocol unconfirmed \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\caption{OT Network Devices}
+\end{table}
+
+\subsubsection{IT / MES Network}
+
+\begin{table}[H]
+\centering
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Device} & \textbf{IP} & \textbf{Role} & \textbf{Notes} \\
+\midrule
+festo-mes-pc & 172.21.0.90 & MES / NTP Server & Polls PLC S2 alarm table every $\sim$3 s; NTP master; OPC-UA client to PLC S2 \\
+desktop-6jd9ili & 172.21.0.168 / .192 & Engineering PC (dual-NIC) & SIMATIC-PC family; TIA Portal host presumed \\
+gebruik-tt8ke80 & 172.21.0.165 & VMware Host & Two MACs: physical NIC (60:cf:84) + VMware vNIC (00:0c:29); VM roles unknown \\
+PC Cobot-ML & 172.21.1.90 & ML Inference PC & OPC-UA client to PLC S2 \\
+CPX-IOT & 172.21.0.210 & Unknown / MQTT? & Festo device; silent during all captures — cloud link unconfirmed \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\caption{IT / MES Network Devices}
+\end{table}
+
+\subsubsection{Engineering Access}
+
+At least three distinct engineering/programming channels were observed or inferred, none of which pass through any controlled access path:
+
+\begin{itemize}
+\item \textbf{desktop-6jd9ili} (172.21.0.168 / 172.21.0.192): Registered engineering PC with dual NICs. Presumed TIA Portal host.
+\item \textbf{172.21.0.156} (MAC c4:c6:e6:d4:c3:81): Unregistered device. Maintained a persistent S7comm/102 session to PLC S2 across all five captures. Consistent with TIA Portal or Step 7 in online monitoring mode. This device is not in any inventory version.
+\item \textbf{Kyan\_laptop} (172.21.0.179, MAC a0:ce:c8:f7:ab:c9): Identified by DCP as SIMATIC-PC family. Likely a student or visitor machine admitted to the OT subnet without restriction.
+\end{itemize}
+
+\subsubsection{External \& Cloud Connections}
+
+Two devices raise concerns about external connectivity:
+
+\begin{itemize}
+\item \textbf{TP-Link device} (172.21.0.200): Identified via UPnP SSDP as a TP-Link access point or router (MiniUPnPd/1.8). Broadcasts on TP-Link proprietary discovery port UDP/20002. If this device has a WAN port or wireless interface bridged to the OT subnet, it represents a direct internet-facing exposure.
+\item \textbf{CPX-IOT} (172.21.0.210): Festo device, OUI 00:0E:F0. Produced zero traffic in all five captures. The name `IOT' and the CPX product line's known cloud connectivity features suggest it may be a cloud gateway (MQTT over internet). Its silence during captures could indicate an idle state or encrypted tunnelled traffic not visible at Layer 2.
+\end{itemize}
+
+\subsubsection{Flat vs. Segmented Assessment}
+
+The network is entirely flat. There is no evidence of any segmentation mechanism:
+
+\begin{itemize}
+\item No VLANs (capture1 shows VLAN tag value 0 = untagged/priority-tagged only on the PROFINET cyclic traffic, not a segmentation VLAN)
+\item No routed boundaries between device classes
+\item No firewall between MES and PLCs
+\item No DMZ or IDMZ between IT and OT layers
+\item No 802.1X or MAC-based port security on any observed switch
+\end{itemize}
+
+From a Purdue Model / IEC 62443 zone perspective: the network presents as a single undifferentiated zone spanning Levels 0 through 3, with potential Level 4 exposure via the TP-Link device and CPX-IOT.

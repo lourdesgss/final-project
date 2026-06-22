@@ -1,8 +1,10 @@
-\section{Logical Network Redesign}
+\section{To-Be Architecture}
+
+\subsection{Logical Network Redesign}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{./report_chapters/7_network_redesign/img/logic_redesign.pdf}
+    \includegraphics[width=1\textwidth]{./report_chapters/6_to_be_architecture/img/logic_redesign.pdf}
     \caption{Zone \& Conduit Diagram}
 \end{figure}
 
@@ -16,15 +18,15 @@ All inter-zone traffic passes through a firewall and is restricted to explicitly
 The IT Zone contains nodes handling business logic and order management. It have no direct
 routed path to any OT device - all IT to OT traffic goes through the IDMZ.
 \subsubsection{IDMZ}
-The IDMZ acts as a buffer between IT and OT devices. No connecection is allowed 
+The IDMZ acts as a buffer between IT and OT devices. No connection is allowed 
 to pass from the IT to OT and vice versa. Every traffic exchange terminates inside IDMZ,
-and its re-innitiated to the other side. This solution implements IEC 62443-3-3 SR 5.1 principle.
+and its re-initiated to the other side. This solution implements IEC 62443-3-3 SR 5.1 principle.
 \subsubsection{OT Cell Zone}
-The OT Cell Zone Contains devices supporting production, but not beeing part of the physical production
-process. The Enigneering Workstation is placed in this logical zone, however, in physical
+The OT Cell Zone Contains devices supporting production, but not being part of the physical production
+process. The Engineering Workstation is placed in this logical zone, however, in physical
 implementation, this node will be further isolated into separate VLAN.
 \subsubsection{OT Production Zone}
-The OT Production Zone contains devices beeing part of the direct physical production process.
+The OT Production Zone contains devices being part of the direct physical production process.
 Only inbound traffic allowed in this zone are reads and writes from the proxy services, and 
 S7comm+ from the engineering workstation.
 
@@ -53,22 +55,22 @@ In the AS-IS architecture, TIA Portal is run on the same PC as MES service - par
 A dedicated Engineering Workstation is placed in the OT Cell Zone (physically on separate VLAN).
 This workstation purpose is to program and configure PLC's and HMI's with separation
 from IT nodes. Traffic is restricted only to TCP 102 on PLC's and HMI's. This enforces
-least-privilage and IEC 62443-2-1 §4.3.3.
+least-privilege and IEC 62443-2-1 §4.3.3.
 \subsubsection{Syslog}
 In the AS-IS architecture, there is no centralized logging system implemented.
 Syslog node collects all logs from the firewalls, managed switches, OPC UA and HTTP proxy, and MQTT broker.
 This provides post-attack analysis and satisfies IEC 62443-3-3 SR 6.1 and NIS2 Article 21(2)(f). 
 \subsubsection{Backup}
-In AS-IS architecture, there is no documented backup procedure. The backup node recieves
+In AS-IS architecture, there is no documented backup procedure. The backup node receives
 configuration backups from the Engineering Workstation after every change and daily database
 backups from the MES. It is placed on separate VLAN inside IT zone, separated from
-indbound traffic from OT. Satisfies IEC 62443-2-1 §4.3.4 and ISO/IEC 27001 A.12.3.
+inbound traffic from OT. Satisfies IEC 62443-2-1 §4.3.4 and ISO/IEC 27001 A.12.3.
 \subsubsection{Log \& Backup proxy}
 
 
-
 \subsection{Firewalls}
-This section only describres briefly the high-level purpose of the firewall nodes.
+
+This section only describes briefly the high-level purpose of the firewall nodes.
 Further specification on permitted conduits is described in 7.2.2.
 \subsubsection{Edge Firewall}
 Terminates all VPN tunnels from remote engineers and vendor support, 
@@ -86,21 +88,23 @@ so they do not pass this firewall. Profinet never crosses this boundary —
 it remains Layer 2 within each station. All other traffic denied. 
 Satisfies IEC 62443-3-3 SR 5.1 and the least privilege principle.
 
+
+
 \subsection{Network Implementation}
 The Network Implementation diagram is appended to the report for better visibility.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{report_chapters/7_network_redesign/img/redesign_iml.pdf}
+    \includegraphics[width=1\textwidth]{report_chapters/6_to_be_architecture/img/redesign_iml.pdf}
     \caption{Network Implementation}
 \end{figure}
 
-\subsection{VLAN Segmentation \& Restricted Routing}
+\paragraph{VLAN Segmentation \& Restricted Routing}
 The redesigned factory network is implemented using VLAN-based segmentation 
 on managed industrial switches. Each security zone is assigned a dedicated 
 VLAN and IP subnet. Inter-VLAN communication is not performed by the switch 
 itself but is routed through a central industrial firewall.
 The firewall has one tagged VLAN port for each VLAN - which is a default gateway
-for each node withing that VLAN.
+for each node within that VLAN.
 The firewall enforces security 
 policies between zones. A VLAN trunk connection between the firewall and the 
 managed switch transports traffic for all security zones while preserving 
@@ -135,11 +139,11 @@ It satisfies IEC 62443-3-3 SR 5.1 (Restricted Data Flow) and SR 5.2 (Zone Bounda
 \end{tabularx}
 
 \pagebreak
-\subsection{Justified Protocols Routes}
+\paragraph{Justified Protocols Routes}
 The permitted flows exists to allow a required operational
 functionality - all other are denied.
 The IT node never reaches an OT node directly. All IT to OT connections are terminated
-and re-innitiated in the IDMZ proxy to the other side. \\ \vspace{1em}
+and re-initiated in the IDMZ proxy to the other side. \\ \vspace{1em}
 
 \renewcommand{\arraystretch}{1.3} % 30% more row height
 \begin{tabularx}{\textwidth}{p{2.5cm} X X X}

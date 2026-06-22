@@ -1,0 +1,48 @@
+subsection{Protocol Matrix}
+{\small
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{L{2.6cm} L{2.2cm} L{1.8cm} L{1.6cm} L{3.4cm} L{3.2cm}}
+\toprule
+\textbf{Source} & \textbf{Destination} & \textbf{Protocol} & \textbf{Port} & \textbf{Direction} & \textbf{Purpose} \\
+\midrule \endhead
+    MES & PLC & OPC-UA & TCP 4840 & MES(OPC-UA Client) to
+    PLC(OPC-UA Server) & Read/write process data \\ 
+
+    HMI / PLC & MES & NTP & UDP 123 &
+    Clients(HMI/PLC) to MES(NTP Server) & Time sync (MES is NTP server) \\
+
+    Internet & MES & HTTPS & TCP 443 & Internet to MES &
+    Webshop orders \\ 
+
+    Cobot-ML PC & Camera & HTTP & TCP 80 & Cobot-ML to
+    Camera & Fetch inspection image from Camera server \\ 
+
+    Cobot-ML PC & PLC & OPC-UA & TCP 4840 & Cobot-ML to PLC & 
+    Process data - based on image processing \\
+
+    PLC & IO Device & PROFINET &
+    L2 / 34964 & PLC to IO & Cyclic I/O exchange \\ 
+
+    Festo Controller & CPX-IOT (CVX) & MQTT & TCP 1883 &
+    Controller to CVX & Publish aggregated data \\ 
+
+    RFID Reader & PLC & PROFINET & L2 / 34964 & Reader to PLC &
+    RFID identification \\ 
+
+    PLC & Robot Arm & PROFINET & L2 /
+    34964 & PLC to Robot & Motion commands / status \\ 
+
+    HMI & PLC & S7comm+ & TCP 102 & HMI to PLC & Read/write
+    tags for panel \\ 
+
+    MES PC & PLC & S7comm-plus & TCP 102 & MES to PLC & PLC programming \\ 
+
+    MES PC & HMI & S7comm-plus & TCP 102 & MES to HMI & HMI
+    programming/config \\ 
+
+    Power Monitor & Festo Controller & Modbus & TCP 502
+    & Monitor to Controller & Power consumption data \\
+
+\bottomrule
+\end{longtable}
+}
