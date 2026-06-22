@@ -1,0 +1,122 @@
+\section{Standards and Regulatory Alignment}
+
+The security requirements in Section~\ref{sec:secreq} were derived in alignment with three frameworks. \textbf{IEC 62443} provides the foundational requirement structure for industrial automation and control system (IACS) security and underlies the SR numbering used throughout this report. \textbf{ISO/IEC 27001} is applied where a requirement extends beyond purely OT-specific concerns into general information security management practice (access control, backup, logging). The \textbf{NIS2 Directive} is included to ground the requirements in the EU regulatory baseline applicable to operators of essential and important entities. Table~\ref{tab:standards-alignment} traces each security requirement back to its supporting standard or regulatory clause.
+
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+
+\begin{longtable}{p{1.2cm} p{3.2cm} p{5.2cm} p{4.2cm}} \\
+
+\toprule
+\textbf{SR} & \textbf{Requirement} & \textbf{Key Controls} & \textbf{Standards Reference} \\
+\midrule
+\endfirsthead
+
+\toprule
+\textbf{SR} & \textbf{Requirement} & \textbf{Key Controls} & \textbf{Standards Reference} \\
+\midrule
+\endhead
+
+\bottomrule
+\endlastfoot
+
+SR-01 & Network Segmentation &
+\begin{itemize}[leftmargin=*, noitemsep, topsep=2pt]
+\item Zone separation: OT Field, OT Cell, IDMZ, IT Zone
+\item VLAN/subnet per zone
+\item No direct IT $\rightarrow$ OT Field communication
+\item Firewall-controlled conduits only
+\end{itemize}
+&
+IEC 62443-3-3 SR 5.1; IEC 62443-1-1; NIS2 Art.~21(2)(d) \\
+
+SR-02 & Firewall with Protocol Inspection &
+\begin{itemize}[leftmargin=*, noitemsep, topsep=2pt]
+\item Industrial firewalls between IT and OT zones
+\item Default-deny inter-zone policy
+\item Allowed: OPC UA (4840), MQTT TLS (8883)
+\end{itemize}
+&
+IEC 62443-3-3 SR 5.2; IEC 62443-2-1 \\
+
+SR-03 & OPC UA Hardening &
+\begin{itemize}[leftmargin=*, noitemsep, topsep=2pt]
+\item Sign \& Encrypt (Basic256Sha256)
+\item Certificate-based authentication
+\item Disable anonymous access
+\item Access only via IDMZ OPC UA proxy
+\end{itemize}
+&
+IEC 62443-3-3 SR 1.1, 1.3, 3.1; OPC UA Part 2 \\
+
+SR-04 & MQTT Hardening &
+\begin{itemize}[leftmargin=*, noitemsep, topsep=2pt]
+\item TLS 1.2+ required
+\item Client certificate authentication
+\item Topic-level ACL enforcement
+\item IT zone read-only access
+\end{itemize}
+&
+IEC 62443-3-3 SR 1.1, 3.1; MQTT v5; NIS2 Art.~21(2)(h) \\
+
+SR-05 & HTTP/Web Service Hardening &
+\begin{itemize}[leftmargin=*, noitemsep, topsep=2pt]
+\item Disable unnecessary HTTP services
+\item Enforce HTTPS (TLS 1.2+)
+\item Device certificates required
+\item Firewall-restricted access to specific systems
+\end{itemize}
+&
+IEC 62443-3-3 SR 1.1, 3.1; NIS2 Art.~21(2)(h) \\
+
+SR-06 & Authentication and Least Privilege &
+\begin{itemize}[leftmargin=*, noitemsep, topsep=2pt]
+\item Individual authentication for all OT access
+\item Role-based access control (Operator / Engineer / Admin)
+\item Engineering access restricted to dedicated workstation
+\end{itemize}
+&
+IEC 62443-3-3 SR 1.1--1.3; IEC 62443-2-1 §4.3.3; ISO/IEC 27001 A.9 \\
+
+SR-07 & Secure Engineering Access &
+\begin{itemize}[leftmargin=*, noitemsep, topsep=2pt]
+\item Isolated engineering workstation
+\item Firewall-controlled PLC access only
+\item TIA Portal restricted communication
+\end{itemize}
+&
+IEC 62443-3-3 SR 1.1, 5.2 \\
+
+SR-08 & Logging and Monitoring &
+\begin{itemize}[leftmargin=*, noitemsep, topsep=2pt]
+\item Centralized syslog collection
+\item Firewall logs all denied traffic
+\item OPC UA authentication failure logging
+\item MQTT connection event logging
+\end{itemize}
+&
+IEC 62443-3-3 SR 6.1, 6.2; ISO/IEC 27001 A.12.4; NIS2 Art.~21(2)(f) \\
+
+SR-09 & Time Synchronization (NTP) &
+\begin{itemize}[leftmargin=*, noitemsep, topsep=2pt]
+\item Single authoritative NTP server
+\item All OT devices synchronized
+\end{itemize}
+&
+IEC 62443-2-1 §4.3.4; ISO/IEC 27001 A.12.3; NIS2 Art.~21(2)(c) \\
+
+SR-10 & Backup and Recovery &
+\begin{itemize}[leftmargin=*, noitemsep, topsep=2pt]
+\item Backups after configuration changes
+\item Offline backup storage
+\item Recovery procedure tested biannually
+\item Daily MES database backup
+\end{itemize}
+&
+IEC 62443-2-1 §4.3.4; ISO/IEC 27001 A.12.3; NIS2 Art.~21(2)(c) \\
+
+\caption{Security Requirements Overview}
+\label{tab:security-requirements}
+
+\end{longtable}
