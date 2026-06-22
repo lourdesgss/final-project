@@ -1235,9 +1235,6 @@ only via the IDMZ proxy; trust based on authenticated identity and certificates
 rather than subnet membership.
 
 
-\section{Discussion and Limitations}
-TODO merge
-
 \subsection{Organizational \& Procedural Measures}
 
 \subsubsection{User Roles}
@@ -1275,25 +1272,60 @@ Backup Strategy is specified in SR-10 (see TODO).
     \item Document — Record what happened, the cause, and the fix. 
 \end{itemize}
 
+\section{Discussion and Limitations}
 \subsection{Data Capture Limitations}
 
-The network traffic captures used for the AS-IS analysis and inventory in this report were taken while the FESTO Smart Factory was operated manually at the lab, rather than running its full automated production cycle. We were unable to get the plant running end-to-end during the sessions allocated for traffic capture, which means some communication flows are inferred from documentation and partial observation rather than confirmed in live traffic.
+The network traffic captures used for the AS-IS analysis and inventory in this
+report were taken while the FESTO Smart Factory was operated manually at the
+lab, rather than running its full automated production cycle. We were unable to
+get the plant running end-to-end during the sessions, which means some
+communication flows are assumed from documentation and partial observation
+rather than confirmed in live traffic.
 
 In particular, this affects:
 \begin{itemize}
-    \item \textbf{Cyclic PROFINET I/O exchange} between the PLC and field devices — only short bursts were captured rather than a full production cycle, so timing characteristics (cycle time, jitter) could not be reliably established.
-    \item \textbf{Robot arm motion sequences} — captured only for isolated test movements, not a complete pick-and-place cycle, so the full range of commands exchanged with the PLC may not be reflected in our Communications Mapping.
-    \item \textbf{MES-triggered workflows} — webshop order processing and the resulting MES-to-PLC instructions could not be captured under realistic load, since we did not have a live order to trigger the flow during our session.
+    \item \textbf{Robot arm motion sequences} — captured only for isolated test
+        movements, not a complete pick-and-place cycle, so the full range of
+        commands exchanged with the PLC may not be reflected in our
+        Communications Mapping.
 
+    \item \textbf{MES-triggered workflows} — webshop order processing and the
+        resulting MES-to-PLC instructions could not be captured under realistic
+        load, since we did not have a live order to trigger the flow during our
+        session.
+
+    \item \textbf{Camera HTTP visual stream} —  TODO
+    \item \textbf{MQTT CXV} - TODO
+    \item \textbf{Festo Controllers} - TODO
 \end{itemize}
 
-As a result, the inventory and AS-IS architecture in this report should be read as a best-effort reconstruction based on the captures we did obtain, supplemented by vendor documentation and protocol specifications where direct observation was not possible. A follow-up assessment with access to a fully operational production run would be needed to confirm completeness of the communications map and to rule out any device or flow not visible during our limited window.
+As a result, the inventory and AS-IS architecture in this report should be read
+as a best-effort reconstruction based on the captures we did obtain,
+supplemented by vendor documentation and protocol specifications. A follow-up
+assessment with access to a fully operational production run would be needed to
+confirm completeness of the communications map and to rule out any device or
+flow not visible during our limited window.
+TODO: rewrite less AI-like, simpler words but still proffesionall.
 
 \subsection{General Reflection}
+Working with a physical lab environment introduced constraints that a purely
+desk-based security assessment would not face. Access to the FESTO plant was
+time-boxed and shared with other coursework groups, which limited how much we
+could experiment with capture conditions or repeat captures under different
+operating states. This is a realistic constraint in any OT environment, however
+— production systems are rarely available on demand for security assessment
+either, and our experience reflects a smaller-scale version of the access
+negotiation that real OT security assessments require.
 
-Working with a physical lab environment introduced constraints that a purely desk-based security assessment would not face. Access to the FESTO plant was time-boxed and shared with other coursework groups, which limited how much we could experiment with capture conditions or repeat captures under different operating states. This is a realistic constraint in any OT environment, however — production systems are rarely available on demand for security assessment either, and our experience reflects a smaller-scale version of the access negotiation that real OT security assessments require.
-
-The exercise also reinforced a recurring theme in OT security: the gap between an idealised Purdue-model architecture and what is actually deployed in practice. Several of the flows we did capture did not cleanly map to the zone boundaries we expected going in, which shaped both our threat modelling and several of the security requirements in Section~\ref{sec:secreq} (notably the explicit firewall conduits in SR-01 and SR-02). We consider this a useful finding in its own right: it suggests that segmentation work on a system like this needs to start from observed traffic rather than assumed architecture.
-
+The exercise also reinforced a recurring theme in OT security: the gap between
+an idealised Purdue-model architecture and what is actually deployed in
+practice. Several of the flows we did capture did not cleanly map to the zone
+boundaries we expected going in, which shaped both our threat modelling and
+several of the security requirements in Section~\ref{sec:secreq} (notably the
+explicit firewall conduits in SR-01 and SR-02). We consider this a useful
+finding in its own right: it suggests that segmentation work on a system like
+this needs to start from observed traffic rather than assumed architecture.
+TODO: rewrite less AI-like, simpler words but still proffesionall - shorter
+sentences.
 
 \end{document}

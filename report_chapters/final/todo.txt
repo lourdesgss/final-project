@@ -1,0 +1,24 @@
+1. Front page - center vertically - no page number
+2. Table of contents - Make 'Contents bigger' - like on fontys template
+3. FIx Asset Inventory - protocols - fill ips and mac addresses
+4. add \pagebreak where needed 
+5. Table12 - caption needs to be under table - not on page break
+6. (chapter 5.4) - add reference to A4 (or so - attachment reference from list of attachments)
+7. Table13 - caption under the table
+8. Table14 - same
+9. 6.5.2 - reference attachment from list of attachments
+10. 8.1.2 - Syslog header \pagebreak
+11. 8.2 Network implementation \pagebreak
+12. Add Sources - ask AI for links for the Standards 
+
+Full document:
+    > fix references.
+    > formatting: all \section needs to start at new page
+
+General Reflection:
+    > Learned a lot of the networking itself
+    > Also how different OT and IT networking is 
+    > Relised Purdue model is not always achievable perfectly - depends on use case
+    > Realied its work/time consuming setup that reqires a person to maintain
+
+
