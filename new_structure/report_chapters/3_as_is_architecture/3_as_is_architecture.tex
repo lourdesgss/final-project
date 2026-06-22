@@ -4,26 +4,94 @@
 \subsection{Communications Mapping}
 
 {\scriptsize
-\setlength{\tabcolsep}{3pt}
-\renewcommand{\arraystretch}{1.05}
-\begin{longtable}{L{2.1cm} L{2cm} L{1.7cm} L{2.6cm} L{2.8cm}}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+
+\begin{longtable}{p{2.2cm} p{2.2cm} p{2.6cm} p{3.2cm} p{4.2cm}}
+
 \toprule
-\textbf{Source} & \textbf{Destination} & \textbf{Protocol/Port} & \textbf{Direction} & \textbf{Purpose} \\
-\midrule \endhead
-MES & PLC & OPC-UA / 4840 & MES (client) $\to$ PLC (server) & Read/write process data \\
-HMI / PLC & MES & NTP / 123 & Clients $\to$ NTP server & Time sync \\
-Internet & MES & HTTPS / 443 & Internet $\to$ MES & Webshop orders \\
-Cobot-ML PC & Camera & HTTP / 80 & Cobot-ML $\to$ Camera & Fetch inspection image \\
-Cobot-ML PC & PLC & OPC-UA / 4840 & Cobot-ML $\to$ PLC & Process data from image \\
-PLC & IO Device & PROFINET (L2) & PLC $\to$ IO & Cyclic I/O exchange \\
-Festo Ctrl & CPX-IoT (CVX) & MQTT / 1883 & Ctrl $\to$ CVX & Publish aggregated data \\
-RFID Reader & PLC & PROFINET (L2) & Reader $\to$ PLC & RFID identification \\
-PLC & Robot Arm & PROFINET (L2) & PLC $\to$ Robot & Motion commands / status \\
-HMI & PLC & S7comm+ / 102 & HMI $\to$ PLC & Read/write panel tags \\
-MES PC & PLC & S7comm+ / 102 & MES $\to$ PLC & PLC programming \\
-MES PC & HMI & S7comm+ / 102 & MES $\to$ HMI & HMI programming/config \\
-Power Monitor & Festo Ctrl & Modbus / 502 & Monitor $\to$ Ctrl & Power consumption data \\
+\textbf{Source} & \textbf{Destination} & \textbf{Protocol / Port} & \textbf{Flow Direction} & \textbf{Purpose} \\
+\midrule
+\endfirsthead
+
+\toprule
+\textbf{Source} & \textbf{Destination} & \textbf{Protocol / Port} & \textbf{Flow Direction} & \textbf{Purpose} \\
+\midrule
+\endhead
+
+\midrule
+\multicolumn{5}{r}{\emph{Continued on next page}} \\
+\midrule
+\endfoot
+
 \bottomrule
+\endlastfoot
+
+MES & PLC &
+OPC UA / 4840 &
+MES $\rightarrow$ PLC &
+Read and write process data \\
+
+HMI / PLC & NTP Server &
+NTP / 123 &
+Clients $\rightarrow$ Time server &
+Time synchronisation \\
+
+Internet & MES &
+HTTPS / 443 &
+External $\rightarrow$ MES &
+Webshop order ingestion \\
+
+Cobot-ML PC & Camera &
+HTTP / 80 &
+ML PC $\rightarrow$ Camera &
+Acquisition of inspection images \\
+
+Cobot-ML PC & PLC &
+OPC UA / 4840 &
+ML PC $\rightarrow$ PLC &
+Process decisions based on image analysis \\
+
+PLC & IO Device &
+PROFINET (Layer 2) &
+PLC $\rightarrow$ Field IO &
+Cyclic field-level I/O exchange \\
+
+Festo Controller & CPX-IoT (MQTT device) &
+MQTT / 1883 (or TLS 8883) &
+Controller $\rightarrow$ IoT device &
+Publishing aggregated telemetry data \\
+
+RFID Reader & PLC &
+PROFINET (Layer 2) &
+Reader $\rightarrow$ PLC &
+Product identification input \\
+
+PLC & Robot Arm &
+PROFINET (Layer 2) &
+PLC $\rightarrow$ Robot &
+Motion commands and status exchange \\
+
+HMI & PLC &
+S7comm+ / 102 &
+HMI $\rightarrow$ PLC &
+Read/write HMI tag interaction \\
+
+MES PC & PLC &
+S7comm+ / 102 &
+MES $\rightarrow$ PLC &
+Programming and configuration access \\
+
+MES PC & HMI &
+S7comm+ / 102 &
+MES $\rightarrow$ HMI &
+HMI configuration and deployment \\
+
+Power Monitor & Festo Controller &
+Modbus TCP / 502 &
+Monitor $\rightarrow$ Controller &
+Power consumption telemetry \\
+
 \end{longtable}
 }
 
@@ -58,7 +126,6 @@ The overall security posture is assessed as \textbf{CRITICAL}. The network prese
 
 \paragraph{IEC 62443 Violations}
 
-\begin{table}[H]
 \centering
 \begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{@{}p{0.55\textwidth}p{0.4\textwidth}@{}}
