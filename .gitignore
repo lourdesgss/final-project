@@ -11,4 +11,5 @@ pyvenv.cfg
 *.toc
 *.synctex.gz
 *.dvi
+*bbl
 .DS_Store
