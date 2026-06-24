@@ -24,7 +24,7 @@
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 
 \title{\textbf{Securing the Festo Smart Factory Lab}\\[2pt]}
-\author{Aleksander Kłap \& Lourdes Gaurisse}
+\author{Aleksander Kłap \& Lourdes Gaurisse\\Fontys ICT}
 \date{June 23, 2026}
 
 \begin{document}
@@ -46,18 +46,15 @@ report.
 \toprule
 \textbf{Ref} & \textbf{Attachment} & \textbf{Description} \\
 \midrule
-    A1 & Festo Plant AS-IS Network Diagram & See chapter 4.2. Attached for better
-    visibility. \\
+    A1 & Festo Plant AS-IS Network Diagram & See Chapter 4.2. \\
 
-    A2 & TO-BE Architecture Zones \& Conduits Diagram & See chapter 8.1.
-    Attached for better visibility. \\
+    A2 & TO-BE Architecture Zones \& Conduits Diagram & See Chapter 8.1. \\
 
-    A3 & TO-BE Network Implementation Architecture & See chapter 8.2. Attached
-    for better visibility. \\
+    A3 & TO-BE Network Implementation Architecture & See Chapter 8.2. \\
 
-    A4 & In-practice weak passord break-in evidence & See chapter 5.4. \\
+    A4 & In-practice weak password break-in evidence & See Chapter 5.4. \\
 
-    A5 & Hands-on Attack on Hardware evidence & See chapter 6.5. \\
+    A5 & Hands-on Attack on Hardware evidence & See Chapter 6.5. \\
 
 \bottomrule
 \end{tabular}
@@ -68,11 +65,10 @@ report.
 \section{Introduction \& Scope}
 This report assesses and redesigns the cybersecurity posture of the 
 Fontys Festo Smart Factory Lab 4.0. The factory is functionally operational
-but was not designed against state-of-the-art OT security
-principles.
+but was not designed against state-of-the-art OT security principles.
 \vspace{1em}
 
-The work follows four phases: describe the current (AS-IS) state, perform a
+The workload follows four phases: describe the current (AS-IS) state, perform a
 threat and risk analysis, specify security requirements, and design a
 secure-by-design (TO-BE) architecture including supporting hardware
 recommendation and procedures to follow. The goal is to protect availability,
@@ -145,7 +141,7 @@ setup. \\
     Router & TP-Link router & 172.21.0.200 &
     20:23:51:41:a2:88 & Ethernet & Router \\
 \bottomrule
-    \caption{Network infrastructure inventory}
+    \caption{Network Infrastructure Inventory}
 \end{longtable}
 
 \pagebreak
@@ -166,7 +162,7 @@ setup. \\
     RFID Reader & Turck TBEN-S2-2RFID-4DXP & 172.21.1.20 &
     00:07:46:aa:07:cc & PROFINET & RFID identification of transport trays \\
 \bottomrule
-    \caption{Station 1 inventory}
+    \caption{Station 1 Inventory}
 \end{longtable}
 
 \paragraph{Station 2 --- Ball Sorting / Dispense (172.21.2.x)}
@@ -182,7 +178,7 @@ setup. \\
     HMI S2 & Siemens MTP700 Unified Comfort & 172.21.2.10 & 30:13:89:35:d8:af &
     PROFINET, S7comm+, NTP & Operator panel \\
 
-    FESTO Controller & unknown & 172.21.2.60 & 00:0e:f0:99:cb:38 & OPC-UA, MQTT & agreggate sensors and power monitor data\\
+    FESTO Controller & unknown & 172.21.2.60 & 00:0e:f0:99:cb:38 & OPC-UA, MQTT & Aggregate sensors and power monitor data\\
 
     Power Monitor S2 & Siemens & 172.21.2.61 & 10:DF:FC:17:DC:72 & OPC-UA & Power
     consumption monitoring \\
@@ -190,7 +186,7 @@ setup. \\
     IO Device & Siemens ET200SP IM155-6PN/2 HF / V4.2.4 & 172.21.2.100 &
     4c:e7:05:4b:46:4b & PROFINET IO & Remote IO module - ball dispenser control \\
 \bottomrule
-    \caption{Station 2 inventory}
+    \caption{Station 2 Inventory}
 \end{longtable}
 
 \paragraph{Station 3 --- Camera Inspection (172.21.3.x)}
@@ -210,7 +206,7 @@ setup. \\
     Camera & SensoPart & 172.21.3.50 & 00:19:6F:0D:A3:72 & HTTP & Monitoring ball distribution on tray \\
 
 \bottomrule
-    \caption{Station 3 inventory}
+    \caption{Station 3 Inventory}
 \end{longtable}
 
 \pagebreak
@@ -229,7 +225,7 @@ setup. \\
     PROFINET & Operator panel \\
 
 \bottomrule
-    \caption{Station 4 inventory}
+    \caption{Station 4 Inventory}
 \end{longtable}
 
 \paragraph{Station 5 --- Muscle Press (172.21.5.x)}
@@ -246,7 +242,7 @@ setup. \\
     PROFINET & Operator panel \\
 
 \bottomrule
-    \caption{Station 5 inventory}
+    \caption{Station 5 Inventory}
 \end{longtable}
 
 \paragraph{Station 6 --- Oven (172.21.6.x)}
@@ -261,13 +257,13 @@ Switch S6 & Siemens SCALANCE XB008 & unmanaged & unmanaged & Ethernet & Station 
 PLC S6 & Siemens CPU 1512SP F-1 PN / V3.0.3 & 172.21.6.1 & 30:B8:51:32:D4:5F & PROFINET, HTTP, OPC-UA, S7comm & Process control S6 \\
 
 FESTO Controller & unknown & 172.21.6.60 & 00:0e:f0:93:af:99 & OPC-UA, MQTT
-& agreggate sensors and power monitor data\\
+& Aggregate sensors and power monitor data\\
 
 Power Monitor S6 & Siemens & 172.21.6.61 & 10:df:fc:17:dc:6c & OPC-UA & Power
 consumption monitoring \\
 
 \bottomrule
-    \caption{Station 6 inventory}
+    \caption{Station 6 Inventory}
 \end{longtable}
 } % end scriptsize
 
@@ -277,7 +273,7 @@ Through physical inspection of the Festo plant, nmap host
 discovery, and Wireshark traffic captures, we mapped the
 current network architecture. The result is shown in the
 diagram below. \vspace{0.5em}\\
-For better visibility, this diagram is attached separatly to the report (see A1).
+For better visibility, this diagram is attached separately to the report (see A1).
 
 \begin{figure}[H]
     \centering
@@ -361,7 +357,7 @@ F-08 & HIGH & gebruik-tt8ke80 runs VMware with unknown VM roles on OT subnet \\
 F-09 & MEDIUM & PROFINET carries no authentication --- DCP allows rename/reconfigure \\
 F-10 & LOW & NTP provided only by MES PC --- single point of failure \\
 \bottomrule
-\caption{Security weaknesses summary}\\
+\caption{Security Weaknesses Summary}\\
 \end{longtable}
 
 \subsection{Security Weaknesses Findings}
@@ -405,7 +401,7 @@ F-10 & LOW & NTP provided only by MES PC --- single point of failure \\
 {gebruik-tt8ke80 presents a physical NIC and a VMware vNIC at the same IP; hosted VM roles and OS are unknown, and bridged VMs inherit OT subnet membership.}
 {An internet-connected or unpatched VM provides a path from an untrusted environment to OT; hypervisor flaws can enable VM escape to a host with physical-layer OT access.}
 
-\paragraph{Medium / Low findings.}
+\paragraph{Medium / Low Findings.}
 \begin{itemize}[nosep]
   \item \textbf{F-9:} Restrict PROFINET (L2, EtherType 0x8892) to known switch ports via VLAN/port security; disable DCP Set on production devices where supported.
   \item \textbf{F-10:} Add a secondary NTP source and authenticate NTP (NTS or keys).
@@ -414,7 +410,7 @@ F-10 & LOW & NTP provided only by MES PC --- single point of failure \\
 \pagebreak
 \subsection{Standards Compliance Status}
 \begin{longtable}{L{3.6cm} L{4.6cm} L{3.8cm} L{2.6cm}}
-\textbf{Standard / Requirement} & \textbf{Requirement summary} & \textbf{Current status} & \textbf{Findings} \\
+\textbf{Standard / Requirement} & \textbf{Requirement Summary} & \textbf{Current Status} & \textbf{Findings} \\
 \midrule \endhead
 IEC 62443-1-1 Zone \& Conduit & Define zones; control conduits & NOT MET --- single flat zone & F-01, F-02, F-03 \\
 IEC 62443-2-1 CSMS & Asset inventory, risk, access, change control & PARTIAL --- incomplete inventory & F-04, F-09, F-15 \\
@@ -428,10 +424,10 @@ Defense-in-Depth & Multiple independent layers & NOT MET --- single perimeter & 
 Least Privilege & Minimum necessary access & NOT MET --- unrestricted subnet access & F-02, F-03, F-06 \\
 Zero Trust & No implicit trust from location & NOT MET --- trust by /18 membership & F-02, F-04, F-08 \\
 \midrule
-\caption{AS-IS standards compliance summary}\\
+\caption{AS-IS Standards Compliance Summary}\\
 \end{longtable}
 
-\subsection{In-practice weak password break-in}
+\subsection{In-Practice Weak Password Break-In}
 Beyond the findings based on traffic and network analysis, we
 obtained one practical finding: a weak system password. On the
 MES PC Windows login screen, after entering a wrong password,
@@ -447,28 +443,28 @@ allowed us to log in to many hardware elements of the factory
 with high privileges, including user management, stopping
 services, and changing configuration. 
 
-Proof of this access is attached to the report.
+Proof of this access can be found in the Appendix, while more detailed information can be accessed in the folder of attachments accompanying this report.
 
 \pagebreak
 \section{Threat \& Risk Analysis}
 The analysis follows IEC~62443 principles and a simplified STRIDE model adapted
-for ICS. Industrial systems are sensitive because compromise can directly
+for ICS. Industrial systems are especially sensitive because compromise can directly
 affect physical processes, safety, and production continuity, not just data.
 
 \subsection{Attacker Profiles}
 \begin{itemize}[nosep]
-  \item \textbf{External attacker:} motivated by financial gain, disruption, or opportunistic exploitation; relies on phishing, misconfigured remote access, or known vulnerabilities.
+  \item \textbf{External Attacker:} motivated by financial gain, disruption, or opportunistic exploitation; relies on phishing, misconfigured remote access, or known vulnerabilities.
   \item \textbf{Insider:} a user with legitimate access (operator, engineer, contractor); can bypass perimeter controls and poses the highest risk for silent tampering.
-  \item \textbf{Student / opportunistic actor:} low sophistication but high local/physical access; responsible for accidental misconfiguration or simple exploitation of weak segmentation.
+  \item \textbf{Student / Opportunistic Actor:} low sophistication but high local/physical access; responsible for accidental misconfiguration or simple exploitation of weak segmentation.
 \end{itemize}
 
 \subsection{Threat Scenarios}
 \begin{itemize}[nosep]
-  \item \textbf{PLC manipulation:} modifying control logic or setpoints, causing unsafe actuator behaviour or bypassed interlocks, usually via a compromised engineering workstation or insider access.
+  \item \textbf{PLC Manipulation:} modifying control logic or setpoints, causing unsafe actuator behaviour or bypassed interlocks, usually via a compromised engineering workstation or insider access.
   \item \textbf{Denial of Service:} flooding network segments or exploiting protocol weaknesses to disrupt PLC/SCADA/HMI communication.
-  \item \textbf{Unauthorized device access:} a rogue device introduced physically or via misconfiguration scans, impersonates trusted nodes, or interacts with PLC services.
+  \item \textbf{Unauthorized Device Access:} a rogue device introduced physically or via misconfiguration scans, impersonates trusted nodes, or interacts with PLC services.
   \item \textbf{Malware via Engineering PC:} a compromised engineering workstation pivots into PLC networks, extracts logic, or deploys malicious changes --- one of the most critical ICS vectors.
-  \item \textbf{Data manipulation via MES/Webshop:} altering production orders, parameters, or scheduling, leading to incorrect batches and downstream disruption.
+  \item \textbf{Data Manipulation via MES/Webshop:} altering production orders, parameters, or scheduling, leading to incorrect batches and downstream disruption.
 \end{itemize}
 
 \subsection{Threat Table}
@@ -490,7 +486,7 @@ SCADA/HMI & Denial of service & External & Denial of service & Med--High & Opera
 Webshop/API & Data modification & External & Tampering, Info.\ disclosure & Med--High & Order data changed \\
 Network switches & Rogue device & Student / Insider & Spoofing & Medium & Unauthorized laptop joins VLAN \\
 \bottomrule
-\caption{ICS threat analysis matrix}
+\caption{ICS Threat Analysis Matrix}
 \end{longtable}
 }
 
@@ -501,7 +497,7 @@ Likelihood and impact are scored 1--4; risk score is their product.
 \setlength{\tabcolsep}{4pt}
 \begin{longtable}{L{4.0cm} L{1.8cm} L{6.0cm} L{1.4cm} L{1.6cm}}
 \toprule
-\textbf{Threat} & \textbf{Likelihood} & \textbf{Impact (safety / production / education)} & \textbf{Score} & \textbf{Priority} \\
+\textbf{Threat} & \textbf{Likelihood} & \textbf{Impact (Safety / Production / Education)} & \textbf{Score} & \textbf{Priority} \\
 \midrule \endhead
 Engineering PC malware infection & High (3) & Critical (4): full control-layer
     compromise, persistent access & 12 & Critical \\
@@ -536,7 +532,7 @@ Engineering PC malware infection & High (3) & Critical (4): full control-layer
     Session hijacking (SCADA) & Low (1) & High (3): stealth manipulation, loss
     of trust & 3 & Low \\
 \bottomrule
-\caption{ICS threat risk assessment}\\
+\caption{ICS Threat Risk Assessment}\\
 \end{longtable}
 }
 
@@ -554,7 +550,7 @@ connection and stops the device from communicating, causing a
 denial of service.
 
 \pagebreak
-\subsubsection{Attack data flow}
+\subsubsection{Attack Data Flow}
 \begin{enumerate}
     \item Attacker connects to the network through switch.
     \item Attacker sends DCP Identify Request (broadcast frame for FF:FF:FF:FF:FF:FF)
@@ -568,13 +564,13 @@ denial of service.
             \item New value - new\_name
         \end{itemize}
     \item Attacker sends this packet for known MAC address
-    \item IO device recieves mallicious frame and validates only frame structure and protocol format.
-    \item IO device accepts the packet and overrides the internaly Profinet Station Name.
-    \item IO device sends DCP Set Response frame that confirms successfull configuration change.
+    \item IO device receives malicious frame and validates only frame structure and protocol format.
+    \item IO device accepts the packet and overrides the internal Profinet Station Name.
+    \item IO device sends DCP Set Response frame that confirms successful configuration change.
     \item IO device restarts its communication stack. All active Application Relationships are terminated.
-    \item PLC recieves timeout status on the IO device communication.
+    \item PLC receives timeout status on the IO device communication.
     \item PLC attempts to reconnect to the IO device by sending DCP packet with specified Station Name.
-    \item IO device Station Name missmatch the DCP request therefore connection is not established.
+    \item IO device Station Name mismatch the DCP request therefore connection is not established.
 \end{enumerate}
 
 \subsubsection{Attack Result}
@@ -627,7 +623,7 @@ Direct communication from the IT Zone to the OT Field Zone
     \vspace{0.5em}
 \\
 \textit{SR-02.2} &
-Firewall rules shall enforce default-denay policy on all inter-zone traffic,
+Firewall rules shall enforce default-deny policy on all inter-zone traffic,
 with only explicitly whitelisted flows permitted:
 \begin{itemize}[label=-, itemsep=0pt, topsep=2pt]
     \item OPC UA (TCP port 4840) from IMDZ OPC UA proxy to PLC's and Festo Controllers
@@ -653,7 +649,7 @@ with only explicitly whitelisted flows permitted:
     \vspace{0.5em}
 \\
 \textit{SR-03.2} &
-    Each client (MES, COBOL) must authenticate with an application certificate. Annonymous and username/password authentication sessions shall be disabled.
+    Each client (MES, COBOL) must authenticate with an application certificate. Anonymous and username/password authentication sessions shall be disabled.
     \vspace{0.5em}
     \\
 \textit{SR-03.3} &
@@ -677,7 +673,7 @@ with only explicitly whitelisted flows permitted:
     \vspace{0.5em}
 \\
 \textit{SR-04.2} &
-    Each MQTT publusher (MQTT CXV device) shall authenticate with a client certificate.
+    Each MQTT publisher (MQTT CXV device) shall authenticate with a client certificate.
     \vspace{0.5em}
     \\
 \textit{SR-04.3} &
@@ -685,7 +681,7 @@ with only explicitly whitelisted flows permitted:
     \vspace{0.5em}
     \\
 \textit{SR-04.4} &
-    Nodes in IT zone shall only subscribe (not publush) to the OT topics.
+    Nodes in IT zone shall only subscribe (not publish) to the OT topics.
     \vspace{0.5em}
     \\
 \midrule
@@ -706,7 +702,7 @@ with only explicitly whitelisted flows permitted:
     \vspace{0.5em}
 \\
 \textit{SR-04.2} &
-    If the Web Interface is required, it must be migrated to HTTPS (TLS 1.2+) with a device certificate, and access restricted by firewall to only sepcific source
+    If the Web Interface is required, it must be migrated to HTTPS (TLS 1.2+) with a device certificate, and access restricted by firewall to only specific source
     IP's of pooling systems.
     \vspace{0.5em}
     \\
@@ -715,7 +711,7 @@ with only explicitly whitelisted flows permitted:
     \vspace{0.5em}
     \\
 \textit{SR-04.4} &
-    Nodes in IT zone shall only subscribe (not publush) to the OT topics.
+    Nodes in IT zone shall only subscribe (not publish) to the OT topics.
     \vspace{0.5em}
     \\
 \midrule
@@ -728,7 +724,7 @@ with only explicitly whitelisted flows permitted:
 
 %% SR6
 \begin{tabularx}{\textwidth}{>{\bfseries}p{2.5cm} X}
-    \textit{SR-06} & \textbf{Authentication and Least Privilage} \vspace{0.5em}\\
+    \textit{SR-06} & \textbf{Authentication and Least Privilege} \vspace{0.5em}\\
 \toprule
 \textit{SR-06.1} &
     All interactive access (PLC programming, HMI configuration, robot controller configuration) to the OT devices shall require individual user authentication.
@@ -785,11 +781,11 @@ with only explicitly whitelisted flows permitted:
     \vspace{0.5em}
     \\
 \textit{SR-08.3} &
-    OPC UA server shall log all sessions establishment and authentication failiures.
+    OPC UA server shall log all sessions establishment and authentication failures.
     \vspace{0.5em}
     \\
 \textit{SR-08.4} &
-    The MQTT brocker shall log all connect/disconnect events and authentication failiures.
+    The MQTT broker shall log all connect/disconnect events and authentication failures.
     \vspace{0.5em}
     \\
 \midrule
@@ -804,7 +800,7 @@ with only explicitly whitelisted flows permitted:
 
 %% SR9
 \begin{tabularx}{\textwidth}{>{\bfseries}p{2.5cm} X}
-    \textit{SR-09} & \textbf{NTP/Time synchronization} \vspace{0.5em}\\
+    \textit{SR-09} & \textbf{NTP/Time Synchronization} \vspace{0.5em}\\
 \toprule
 \textit{SR-09.1} &
     A single NTP server must be designated. All OT devices shall synchronize using this server.
@@ -820,7 +816,7 @@ with only explicitly whitelisted flows permitted:
 
 %% SR10
 \begin{tabularx}{\textwidth}{>{\bfseries}p{2.5cm} X}
-    \textit{SR-10} & \textbf{NTP/Time synchronization} \vspace{0.5em}\\
+    \textit{SR-10} & \textbf{NTP/Time Synchronization} \vspace{0.5em}\\
 \toprule
 \textit{SR-10.1} &
     All PLC programs, HMI and Controllers configurations must be backed up after every change to and dedicated backup storage. 
@@ -867,69 +863,70 @@ restricted to explicitly whitelisted traffic paths.
 % 
 \subsubsection{Logic Zones}
 \textbf{IT Zone} \\ The IT Zone contains nodes handling business logic and
-order management. It have no direct routed path to any OT device - all IT to OT
+order management. It has no direct routed path to any OT device - all IT to OT
 traffic goes through the IDMZ.
 
 \textbf{IDMZ} \\ The IDMZ acts as a buffer between IT and OT devices. No
-connecection is allowed to pass from the IT to OT and vice versa. Every traffic
-exchange terminates inside IDMZ, and its re-innitiated to the other side. This
-solution implements IEC 62443-3-3 SR 5.1 principle.
+connection is allowed to pass from the IT to OT and vice versa. Every traffic
+exchange terminates inside IDMZ, and its re-initiated to the other side. This
+solution implements the IEC 62443-3-3 SR 5.1 principle.
 
-\textbf{OT Cell Zone} \\ The OT Cell Zone Contains devices supporting
-production, but not beeing part of the physical production process. The
-Enigneering Workstation is placed in this logical zone, however, in physical
-implementation, this node will be further isolated into separate VLAN.
+\textbf{OT Cell Zone} \\ The OT Cell Zone contains devices supporting
+production, but not being part of the physical production process. The
+Engineering Workstation is placed in this logical zone, however, in physical
+implementation, this node will be further isolated into a separate VLAN.
 
-\textbf{OT Production Zone} \\ The OT Production Zone contains devices beeing
-part of the direct physical production process. Only inbound traffic allowed in
+\textbf{OT Production Zone} \\ The OT Production Zone contains devices being
+part of the direct physical production process. The only inbound traffic allowed in
 this zone are reads and writes from the proxy services, and S7comm+ from the
 engineering workstation.
 
 \subsubsection{New Nodes} 
-\textbf{OPC UA proxy} \\ In the AS-IS architecture,
+\textbf{OPC UA Proxy} \\ In the AS-IS architecture,
 MES can directly connect to the PLC's OPC UA servers over the flat network. OPC
 UA proxy node aggregates all PLC's OPC UA servers traffic into single endpoint
-inside IDMZ. The MES connects only to proxy, that is also responsible for
+inside IDMZ. The MES connects only to proxy, which is also responsible for
 enforcing rules on what nodes are readable and writable from the MES.
 Furthermore, it logs all sessions. This solution satisfies IEC 62443-3-3 SR
 3.2.
 
-\textbf{Nginx} \\ In AS-IS architecture, MES can directly access unencrypted
+\textbf{Nginx} \\ In the AS-IS architecture, MES can directly access unencrypted
 HTTP services from the OT nodes. As stated in security requirements, all not
 strictly required HTTP servers of OT devices will be disabled. However, for
 required HTTP traffic (e.g PLC's alarm table <- MES) the Nginx node is
 introduced in IDMZ. MES connects to the Nginx over HTTPS TLS 1.2, terminates
 the connection, access the requested HTTP node server and forwards it to the
-MES. Nginx enforces authentication, logging all requests and block requests for
-services that should not be reached from IT zone.
+MES. Nginx enforces authentication, logging all requests and blocks requests for
+services that should not be reached from the IT zone.
 
-\textbf{Dedicated MQTT broker} \\ In the AS-IS architecture MQTT CVX device
-publish messages over a flat network to the MES. MQTT broker node placed in
-IDMZ, aggregates MQTT traffic from the CVX device using TLS 1.2 encryption, and
-it restrict inbound traffic to publish messages only. MES is subscribes to the
+\textbf{Dedicated MQTT Broker} \\ In the AS-IS architecture, the MQTT CVX device
+publishes messages over a flat network to the MES. An MQTT broker node placed in
+the IDMZ aggregates MQTT traffic from the CVX device using TLS 1.2 encryption, and
+restricts inbound traffic to publish messages only. MES is subscribed to the
 MQTT broker, preventing direct communication between OT node and IT node. This
 solution satisfies IEC 62443-3-3 SR 1.1 and SR 3.1.
 
 \textbf{Engineering Workstation} \\ In the AS-IS architecture, TIA Portal is
-run on the same PC as MES service - part of IT and reachable over flat network.
+run on the same PC as the MES service - part of IT and reachable over flat network.
 A dedicated Engineering Workstation is placed in the OT Cell Zone (physically
 on separate VLAN). This workstation purpose is to program and configure PLC's
 and HMI's with separation from IT nodes. Traffic is restricted only to TCP 102
-on PLC's and HMI's. This enforces least-privilage and IEC 62443-2-1 §4.3.3.
+on PLC's and HMI's. This enforces least-privilege and IEC 62443-2-1 §4.3.3.
 
 \pagebreak
 \textbf{Syslog} \\ In the AS-IS architecture, there is no centralized logging
 system implemented. Syslog node collects all logs from the firewalls, managed
 switches, OPC UA and HTTP proxy, and MQTT broker. This provides post-attack
 analysis and satisfies IEC 62443-3-3 SR 6.1 and NIS2 Article 21(2)(f).
+
 \textbf{Backup} \\ In AS-IS architecture, there is no documented backup
-procedure. The backup node recieves configuration backups from the Engineering
+procedure. The backup node receives configuration backups from the Engineering
 Workstation after every change and daily database backups from the MES. It is
-placed on separate VLAN inside IT zone, separated from indbound traffic from
-OT. Satisfies IEC 62443-2-1 §4.3.4 and ISO/IEC 27001 A.12.3.
+placed on a separate VLAN inside the IT zone, separated from inbound traffic from
+OT. This solution satisfies IEC 62443-2-1 §4.3.4 and ISO/IEC 27001 A.12.3.
 
 \subsubsection{Firewalls} 
-This section only describres briefly the high-level purpose of the firewall
+This section briefly describes the high-level purpose of the firewall
 nodes.
 
 \textbf{Edge Firewall} \\ Terminates all VPN tunnels from remote engineers and
@@ -952,7 +949,7 @@ principle.
 
 %% TOBE IMPLEMENTATION
 \subsection{Network Implementation}
-The Network Implementation diagram is appended to the report for better
+The Network Implementation diagram can be found in the Appendix for better
 visibility.
 \begin{figure}[H]
     \centering
@@ -967,7 +964,7 @@ managed industrial switches. Each security zone is assigned a dedicated VLAN
 and IP subnet. Inter-VLAN communication is not performed by the switch itself
 but is routed through a central industrial firewall. The firewall has one
 tagged VLAN port for each VLAN - which is a default gateway for each node
-withing that VLAN. The firewall enforces security policies between zones. A
+within that VLAN. The firewall enforces security policies between zones. A
 VLAN trunk connection between the firewall and the managed switch transports
 traffic for all security zones while preserving logical separation through IEEE
 802.1Q VLAN tagging. \\ Because the switch never bridges VLANs, the only path
@@ -998,14 +995,14 @@ interfaces. It satisfies IEC 62443-3-3 SR 5.1 (Restricted Data Flow) and SR 5.2
     105 & OT Prod - Station 5 & PLC5, HMI5 \\
     106 & OT Prod - Station 6 & PLC6, HMI6, Festo controller \\
 \end{tabularx}
-    \caption{VLAN segmentation}
+    \caption{VLAN Segmentation}
 \end{table}
 
 
 \pagebreak
 \section{Hardware \& Configuration Proposal}
 \subsection{Protocol Hardening}
-The redesign (see chapter 8.1) controls where each protocol may flow. This
+The redesign (see Chapter 8.1) controls where each protocol may flow. This
 chapter defines how each protocol is secured on the device and conduit level.
 
 \subsubsection{Profinet}
@@ -1014,14 +1011,14 @@ at the protocol level. Instead it is secured by isolation.
 \begin{itemize}
 
     \item Layer 2 only - Profinet stays inside each OT Production station (VLAN
-        101 - 106). It is never routed, and never crosses through firewall.
-        Even if routing would be executed (through the attack) router would
+        101 - 106). It is never routed, and never crosses through a firewall.
+        Even if routing would be executed (through the attack), the router would
         drop the communication.
 
     \item No inter-station Profinet communication - Each PLC talks Profinet
-        (with I/O, HMI) only within own VLAN.
+        (with I/O, HMI) only within its own VLAN.
 
-    \item DCP Set disabled - desible DCP Set through TIA Portal for devices
+    \item DCP Set disabled - disable DCP Set through TIA Portal for devices
         that support this feature. This prevents rename/reconfigure attacks
         through DCP.
 
@@ -1030,7 +1027,7 @@ at the protocol level. Instead it is secured by isolation.
 \subsubsection{OPC UA}
 
 OPC UA is the only routed OT data protocol. Hardening is specified in SR-03.
-(see chapter 7.SR-05)
+(see Chapter 7.SR-05)
 
 \begin{itemize}
 
@@ -1038,7 +1035,7 @@ OPC UA is the only routed OT data protocol. Hardening is specified in SR-03.
         'none' is disabled on all PLC and Festo Controllers servers.
 
     \item Certificate authentication - Clients (OPC UA proxy, Cobot/MLvisionPC)
-        authenticate with application certificates. Annonymous and
+        authenticate with application certificates. Anonymous and
         username/password sessions are disabled.
 
     \item Scoped access - The Cobot/MLvisionPC can reach only PLC2 on Station
@@ -1060,8 +1057,8 @@ in SR-04 (see chapter 7.SR-04) Chapter reference
     \item TLS 1.2+ - TLS encryption enforced on all MQTT connections.
 
     \item Client certificates - MQTT CXV device must authenticate with
-        certificate for publish connection to the broker. No annonymous
-        connections allowed.
+        a certificate in order to publish to the broker. No anonymous
+        connections are allowed.
 
     \item Topic ACL's - THe MQTT CXV device may publish only to it's own
         topics. IT nodes (MES) cannot publish to the OT topics.
@@ -1070,7 +1067,7 @@ in SR-04 (see chapter 7.SR-04) Chapter reference
 
 \subsubsection{HTTP/Web Interfaces}
 Some OT devices need to expose plaintext HTTP web interfaces. Hardening is
-specified in SR-05 (see chapter 7.SR-05)
+specified in SR-05 (see Chapter 7.SR-05)
 
 \begin{itemize}
 
@@ -1083,34 +1080,34 @@ specified in SR-05 (see chapter 7.SR-05)
         OT-side resource, and returns it. Plaintext HTTP stays inside the OT
         zone.
 
-    \item Access restriction - Ngnix authenticate requests, logs them and
-        blocks any OT server that should not be reached from IT zone. Firewall
+    \item Access restriction - Ngnix authenticates requests, logs them and
+        blocks any OT server that should not be reached from the IT zone. Firewall
         rules restrict web access to the Nginx TCP/IP port only.
 
 \end{itemize}
 
 \subsubsection{S7comm+ Engineering Access}
-S7comm+ connection is used only for programming PLC's and HMI's. Hardening is
-sepcified in SR-06 and SR-07 (see chapter 7.SR-07)
+S7comm+ connection is only used for programming PLC's and HMI's. Hardening is
+specified in SR-06 and SR-07 (see Chapter 7.SR-07).
 
 \begin{itemize}
 
     \item Single source - S7comm+/TCP102 to any PLC or HMI is allowed only from
         the dedicated Engineering Workstation in VLAN40.
 
-    \item Conduit controll - Engineering Worksation S7comm+ connection
+    \item Conduit control - Engineering Workstation S7comm+ connection
         initialization passes through the firewall, enforcing restriction of
         Engineering Station to PLC's and HMI's only.
 
     \item User Authentication - PLC's and HMI's access requires individual
         login/password authentication with role separation (implemented in TIA
-        portal).
+        Portal).
 
 \end{itemize}
 
 \subsection{Hardware Proposal}
 This chapter lists the hardware required to implement the redesigned
-architecture (see chapter 7). 
+architecture (see Chapter 7). 
 
 \subsubsection{Industrial Firewall}
 \renewcommand{\arraystretch}{1.3} % 30% more row height
@@ -1119,7 +1116,7 @@ architecture (see chapter 7).
     Model & Fortinet FortiGate Rugged 70G \\
     \midrule
     Function & Central Layer 3 firewall and inter-VLAN router. All traffic
-    between VLANs passes through it - under default-deny polict. Can perform
+    between VLANs passes through it - under default-deny policy. Can perform
     stateful filtering and packet inspection of industrial protocols (S7comm+,
     OPC UA, MQTT, HTTP/S). Implements four logical firewalls (Edge, IT–IDMZ,
     IDMZ–OT Cell, OT Cell–OT Production) as separate rule sets between VLAN
@@ -1161,7 +1158,7 @@ architecture (see chapter 7).
     \midrule
 \end{tabularx}
 
-\subsubsection{IDMZ proxy server}
+\subsubsection{IDMZ Proxy Server}
 \renewcommand{\arraystretch}{1.3} % 30% more row height
 \begin{tabularx}{\textwidth}{>{\bfseries}p{2.5cm} X}
     \toprule
@@ -1349,7 +1346,7 @@ Three roles, enforced on PLCs, HMIs, controllers, and the robot (SR-06.2). All a
     \bottomrule
 \end{tabularx}
 \vspace{1em}
-    \caption{Role - Premission configuration}
+    \caption{Role - Permission Configuration}
 \end{table}
 
 \subsubsection{Backup Strategy}
@@ -1421,17 +1418,13 @@ communications map is complete and that no device or flow was missed.
 
 \pagebreak
 \section{General Reflection}
-This project gave us a much more practical understanding of network design. We
-knew the theory behind VLANs, addressing, and switching beforehand, but
-actually splitting the factory into zones, deciding what traffic to allow
-between them, and turning that into firewall and routing rules made it
-concrete. Networking became a set of deliberate choices rather than just
-concepts.
+This project gave us a much more practical understanding of network design, allowing us to apply the theory behind VLANs, addressing, and switching into a real-world setting. Splitting the factory into zones, deciding what traffic to allow
+between them, and turning that into firewall and routing rules let us grasp the concepts in a more concrete manner.
 
-It also showed us how different OT and IT networking really are. IT focuses on
-confidentiality and frequent updates, while OT puts availability and process
+It also showed us how different OT and IT networking are. While IT focuses on
+confidentiality and frequent updates, OT puts availability and process
 stability first. Things that are normal in IT, like patching during the day or
-rebooting a device, are not acceptable when a production line depends on it.
+rebooting a device, are not acceptable in a system constrained by uptime and reliability requirements.
 
 We also realised the Purdue model is not always achievable in its ideal form. It
 works well as a reference for structuring zones, but the existing hardware and
@@ -1444,4 +1437,47 @@ that it is not a one-time job. The design is only the start; keeping it secure
 requires ongoing patching, backups, monitoring, and incident handling, all of
 which need someone to maintain them. A secure factory relies as much on
 continuous effort as on the initial design.
+
+
+\appendix
+\section{Appendix: Figures and Attachments}
+\begin{figure}[H]
+    \centering
+    \includegraphics[
+        angle=90,
+        width=0.26\textheight
+    ]{img/festo_plant_network_architecture_diagram.pdf}
+    \caption{AS-IS Network Diagram (Rotated)}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[
+        angle=90,
+        width=1\textwidth, 
+        height=0.8\textheight, 
+        keepaspectratio]{img/redesign_iml.pdf}
+    \caption{Network Implementation (Rotated)}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[
+        width=1\textwidth, 
+        height=0.4\textheight, 
+        keepaspectratio]{img/mes_ordershop.png}
+    \caption{Proof of Attack: Access to MES Web Order Shop}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[
+        width=1\textwidth, 
+        height=0.4\textheight, 
+        keepaspectratio]{img/mes_resources.png}
+    \caption{Proof of Attack: Access to MES Resources Description}
+\end{figure}
+
+
 \end{document}
+
