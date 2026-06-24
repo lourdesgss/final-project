@@ -25,16 +25,17 @@
 
 \title{\textbf{Securing the Festo Smart Factory Lab}\\[2pt]}
 \author{Aleksander Kłap \& Lourdes Gaurisse}
-\date{June 15, 2026}
+\date{June 23, 2026}
 
 \begin{document}
 
 \maketitle
 \pagebreak
 \tableofcontents
+\listoftables
 \listoffigures
-\pagebreak
 
+\vspace{3em}
 \section{List of Attachments}
 The following materials are provided as attachments to this
 report.
@@ -60,10 +61,11 @@ report.
 
 \bottomrule
 \end{tabular}
-    \caption{List of Attachments}\label{attachments}
+    \caption{List of Attachments}
 \end{table}
+\pagebreak
 
-\section{Introduction \& Scope}\label{intro}
+\section{Introduction \& Scope}
 This report assesses and redesigns the cybersecurity posture of the 
 Fontys Festo Smart Factory Lab 4.0. The factory is functionally operational
 but was not designed against state-of-the-art OT security
@@ -97,13 +99,12 @@ and principles required by the assignment:
 \pagebreak
 
 % SECTION FESTO Description
-\section{Festo Factory Description}\label{festodesc}
+\section{Festo Factory Description}
 The Festo CPLab is a modular production line representing a
-modern Industry~4.0 plant. It consists of seven cells:
-\vspace{0.5em}
+modern Industry~4.0 plant. It consists of six cells:
+\vspace{0.5em} 
 \begin{itemize}[nosep]
-  \item Station 0 --- Robot Arm: Universal Robots UR3e pick-and-place cobot with a Turck RFID reader.
-  \item Station 1 --- Conveyor Belt: transport between stations.
+  \item Station 1 --- Robot Arm: Universal Robots UR3e pick-and-place cobot with a Turck RFID reader.
   \item Station 2 --- Ball Sorting / Dispense: sorting and dispensing, with remote I/O and a power monitor.
   \item Station 3 --- Camera Inspection: SensoPart vision sensor for quality inspection.
   \item Station 4 --- Magazine: part storage and a Festo CPX cloud-connected valve/IO terminal.
@@ -122,11 +123,11 @@ magazine. Station status and results are reported back to the MES, which tracks
 each order through to completion. The hardware, network, and protocols behind
 this flow are detailed in the following sections.
 
-\section{AS-IS Architecture}\label{asisarch}
+\section{AS-IS Architecture}
 This section documents the Festo Plant factory in its current operational
 setup. \\
 
-\subsection{Asset Inventory}\label{assetinventory}
+\subsection{Asset Inventory}
 {\scriptsize
 \setlength{\tabcolsep}{3pt}
 
@@ -139,34 +140,16 @@ setup. \\
     UA, NTP, HTTP, HTTPS & MES, MES database, NTP server \\
 
     MQTT device & Festo & 172.21.0.210 & 00:0E:F0:7C:A3:C0 &
-    MQTT & MQTT device publishing telemetry data to MES \\
+    MQTT, OPC-UA & MQTT device publishing telemetry data to MES \\
 
     Router & TP-Link router & 172.21.0.200 &
-    20:23:51:41:a2:88 & UDP & Router \\
+    20:23:51:41:a2:88 & Ethernet & Router \\
 \bottomrule
+    \caption{Network infrastructure inventory}
 \end{longtable}
 
-\paragraph{Station 0 --- Robot Arm Station (172.21.1.x/18)}
-\begin{longtable}{L{2cm} L{2.1cm} L{2.1cm} L{2.6cm} L{2.4cm} L{4cm}}
-\toprule
-\textbf{Asset} & \textbf{Model} & \textbf{IP} & \textbf{MAC} & \textbf{Protocols} & \textbf{Function} \\
-\midrule \endhead
-    Switch S0 & Siemens SCALANCE XB008 & unmanaged & unmanaged &
-    Ethernet & Station 0 network distribution \\
-
-    PLC  - TODO\\
-
-    HMI  - TODO\\
-
-    Robot Arm Controller & UR3e & TODO ip & TODO mac & Profinet & Pick \& place robot arm control \\ 
-
-    RFID Reader & Turck TBEN-S2-2RFID-4DXP & 172.21.1.20 &
-    00:07:46:aa:07:cc & PROFINET & RFID identification of transport trays \\
-\bottomrule
-\end{longtable}
-
-
-\paragraph{Station 1 --- Conveyor Belt (172.21.1.x)}
+\pagebreak
+\paragraph{Station 1 --- Robot Arm Station (172.21.1.x)}
 \begin{longtable}{L{2cm} L{2.1cm} L{2.1cm} L{2.6cm} L{2.4cm} L{4cm}}
 \toprule
 \textbf{Asset} & \textbf{Model} & \textbf{IP} & \textbf{MAC} & \textbf{Protocols} & \textbf{Function} \\
@@ -174,15 +157,16 @@ setup. \\
     Switch S1 & Siemens SCALANCE XB008 & unmanaged & unmanaged & Ethernet &
     Station 1 distribution \\
 
-    HMI S1 & Siemens MTP700 Unified Comfort & 172.21.1.10 & 30:13:89:35:da:a8 &
-    PROFINET & Operator panel \\
-
-    PLC S1 & Siemens CPU 1512SP F-1 PN / V3.0.3 & 172.21.1.1 &
-    30:B8:51:32:D3:E7 & PROFINET, HTTP, OPC-UA, S7comm & Process control S1 \\
-
     PC Cobot-ML & unknown & 172.21.1.90 & 08:bf:b8:f1:25:e3 & OPC-UA, HTTP &
     Image Processing \\
+
+    Robot Arm Controller & UR3e & 172.21.1.40 & 00:30:D6:41:1B:24 & Profinet & Pick
+    \& place robot arm control \\ 
+
+    RFID Reader & Turck TBEN-S2-2RFID-4DXP & 172.21.1.20 &
+    00:07:46:aa:07:cc & PROFINET & RFID identification of transport trays \\
 \bottomrule
+    \caption{Station 1 inventory}
 \end{longtable}
 
 \paragraph{Station 2 --- Ball Sorting / Dispense (172.21.2.x)}
@@ -198,14 +182,15 @@ setup. \\
     HMI S2 & Siemens MTP700 Unified Comfort & 172.21.2.10 & 30:13:89:35:d8:af &
     PROFINET, S7comm+, NTP & Operator panel \\
 
-    FESTO COntroller - TODO \\
+    FESTO Controller & unknown & 172.21.2.60 & 00:0e:f0:99:cb:38 & OPC-UA, MQTT & agreggate sensors and power monitor data\\
 
-    Power Monitor S2 & Siemens & 172.21.2.61 & 10:DF:FC:17:DC:72 & TODO & Power
+    Power Monitor S2 & Siemens & 172.21.2.61 & 10:DF:FC:17:DC:72 & OPC-UA & Power
     consumption monitoring \\
 
     IO Device & Siemens ET200SP IM155-6PN/2 HF / V4.2.4 & 172.21.2.100 &
     4c:e7:05:4b:46:4b & PROFINET IO & Remote IO module - ball dispenser control \\
 \bottomrule
+    \caption{Station 2 inventory}
 \end{longtable}
 
 \paragraph{Station 3 --- Camera Inspection (172.21.3.x)}
@@ -225,8 +210,10 @@ setup. \\
     Camera & SensoPart & 172.21.3.50 & 00:19:6F:0D:A3:72 & HTTP & Monitoring ball distribution on tray \\
 
 \bottomrule
+    \caption{Station 3 inventory}
 \end{longtable}
 
+\pagebreak
 \paragraph{Station 4 --- Magazine (172.21.4.x)}
 \begin{longtable}{L{2cm} L{2.1cm} L{2.1cm} L{2.6cm} L{2.4cm} L{4cm}}
 \toprule
@@ -241,14 +228,13 @@ setup. \\
     HMI S4 & Siemens MTP700 Unified Comfort & 172.21.4.10 & 30:13:89:35:D9:EF &
     PROFINET & Operator panel \\
 
-    CPX Terminal & Festo CPX (197330) & TODO & TODO & TODO & Agreggate Festo Controllers monitoring data \\
 \bottomrule
+    \caption{Station 4 inventory}
 \end{longtable}
 
 \paragraph{Station 5 --- Muscle Press (172.21.5.x)}
 \begin{longtable}{L{2cm} L{2.1cm} L{2.1cm} L{2.6cm} L{2.4cm} L{4cm}}
 \toprule
-\textbf{Asset} & \textbf{Model / Firmware} & \textbf{IP} & \textbf{MAC} & \textbf{Protocols} & \textbf{Function} \\
 \midrule \endhead
     Switch S5 & Siemens SCALANCE XB008 & unmanaged & unmanaged & Ethernet &
     Station 5 distribution \\
@@ -260,6 +246,7 @@ setup. \\
     PROFINET & Operator panel \\
 
 \bottomrule
+    \caption{Station 5 inventory}
 \end{longtable}
 
 \paragraph{Station 6 --- Oven (172.21.6.x)}
@@ -273,19 +260,24 @@ Switch S6 & Siemens SCALANCE XB008 & unmanaged & unmanaged & Ethernet & Station 
 
 PLC S6 & Siemens CPU 1512SP F-1 PN / V3.0.3 & 172.21.6.1 & 30:B8:51:32:D4:5F & PROFINET, HTTP, OPC-UA, S7comm & Process control S6 \\
 
-FESTO Controller - TODO\\
+FESTO Controller & unknown & 172.21.6.60 & 00:0e:f0:93:af:99 & OPC-UA, MQTT
+& agreggate sensors and power monitor data\\
 
-Power Monitor S6 & TODO & 172.21.6.61 & 10:DF:FC:17:DC:6C & TODO & Power consumption monitoring \\
+Power Monitor S6 & Siemens & 172.21.6.61 & 10:df:fc:17:dc:6c & OPC-UA & Power
+consumption monitoring \\
+
 \bottomrule
+    \caption{Station 6 inventory}
 \end{longtable}
 } % end scriptsize
 
-\subsection{Network Diagram}\label{asisnetdiagram}
+\pagebreak
+\subsection{Network Diagram}
 Through physical inspection of the Festo plant, nmap host
 discovery, and Wireshark traffic captures, we mapped the
 current network architecture. The result is shown in the
 diagram below. \vspace{0.5em}\\
-For better visibility, this diagram is attached separatly to the report.
+For better visibility, this diagram is attached separatly to the report (see A1).
 
 \begin{figure}[H]
     \centering
@@ -294,7 +286,7 @@ For better visibility, this diagram is attached separatly to the report.
 \end{figure}
 
 %% SUBSection Communication Mapping
-\subsection{Communication Mapping}\label{protocolmatrix}
+\subsection{Communication Mapping}
 {\small
 \setlength{\tabcolsep}{4pt}
 \begin{longtable}{L{2.6cm} L{2.0cm} L{1.8cm} L{1.8cm} L{3.4cm} L{3.2cm}}
@@ -339,14 +331,15 @@ For better visibility, this diagram is attached separatly to the report.
     Power Monitor & Festo Controller & Modbus & TCP 502
     & Monitor to Controller & Power consumption data \\
 \bottomrule
+    \caption{Protocol Matrix}
 \end{longtable}
 }
 
 \pagebreak
 
-\section{AS-IS Architecture Security Analysis}\label{asissecanalysis}
+\section{AS-IS Architecture Security Analysis}
 
-\subsection{Security Weaknesses}\label{secweaknesses}
+\subsection{Security Weaknesses}
 The overall security posture is critical. There is no real barrier
 between the IT systems, engineering PCs, visitor devices, and the live control
 equipment. One compromised device can reach every PLC and HMI. The findings
@@ -354,7 +347,6 @@ below are rated by how easy they are to exploit and their impact on
 availability, safety, and integrity.
 
 \begin{longtable}{L{1.3cm} L{1.8cm} L{12.0cm}}
-\caption{Security weaknesses summary}\\
 \toprule
 \textbf{ID} & \textbf{Severity} & \textbf{Finding} \\
 \midrule \endhead
@@ -369,9 +361,10 @@ F-08 & HIGH & gebruik-tt8ke80 runs VMware with unknown VM roles on OT subnet \\
 F-09 & MEDIUM & PROFINET carries no authentication --- DCP allows rename/reconfigure \\
 F-10 & LOW & NTP provided only by MES PC --- single point of failure \\
 \bottomrule
+\caption{Security weaknesses summary}\\
 \end{longtable}
 
-\subsection{Security Weaknesses Findings}\label{secfindings}
+\subsection{Security Weaknesses Findings}
 \newcommand{\finding}[4]{%
 \par\smallskip\noindent\textbf{#1}\\[2pt]
 \begin{tabularx}{\linewidth}{@{}L{2.7cm} X@{}}
@@ -391,6 +384,7 @@ F-10 & LOW & NTP provided only by MES PC --- single point of failure \\
 {festo-mes-pc communicates directly with PLC~S2 via HTTP (alarm polling), OPC-UA (process data), and NTP --- unmediated, with no DMZ or proxy.}
 {Compromise of the Windows MES PC gives an attacker a trusted, persistent connection to PLC~S2's control interface; a malformed PLC response could also exploit the MES software.}
 
+\pagebreak
 \finding{F-04 --- Unregistered device programming PLCs (IEC 62443-2-1; ISO 27001 A.8.1/A.8.19; Zero Trust)}
 {172.21.0.156 maintained a persistent, high-volume S7comm session to PLC~S2 across all captures and appears in no inventory; behaviour is consistent with TIA Portal in active programming mode.}
 {An unidentified device with S7comm write access to a live PLC is a rogue-programmer scenario: it can alter logic, inject faults, or cause unsafe states on Station~2 with no audit trail.}
@@ -417,11 +411,9 @@ F-10 & LOW & NTP provided only by MES PC --- single point of failure \\
   \item \textbf{F-10:} Add a secondary NTP source and authenticate NTP (NTS or keys).
 \end{itemize}
 
-
-\subsection{Standards Compliance Status}\label{standardsstatus}
+\pagebreak
+\subsection{Standards Compliance Status}
 \begin{longtable}{L{3.6cm} L{4.6cm} L{3.8cm} L{2.6cm}}
-\caption{AS-IS standards compliance summary}\\
-\toprule
 \textbf{Standard / Requirement} & \textbf{Requirement summary} & \textbf{Current status} & \textbf{Findings} \\
 \midrule \endhead
 IEC 62443-1-1 Zone \& Conduit & Define zones; control conduits & NOT MET --- single flat zone & F-01, F-02, F-03 \\
@@ -435,10 +427,11 @@ NIS2 Art.~21(2)(e) & Supply-chain risk management & NOT MET --- unverified firmw
 Defense-in-Depth & Multiple independent layers & NOT MET --- single perimeter & F-01--F-04 \\
 Least Privilege & Minimum necessary access & NOT MET --- unrestricted subnet access & F-02, F-03, F-06 \\
 Zero Trust & No implicit trust from location & NOT MET --- trust by /18 membership & F-02, F-04, F-08 \\
-\bottomrule
+\midrule
+\caption{AS-IS standards compliance summary}\\
 \end{longtable}
 
-\subsection{In-practice weak password break-in}\label{weakpass}
+\subsection{In-practice weak password break-in}
 Beyond the findings based on traffic and network analysis, we
 obtained one practical finding: a weak system password. On the
 MES PC Windows login screen, after entering a wrong password,
@@ -456,7 +449,8 @@ services, and changing configuration.
 
 Proof of this access is attached to the report.
 
-\section{Threat \& Risk Analysis}\label{threatrisk}
+\pagebreak
+\section{Threat \& Risk Analysis}
 The analysis follows IEC~62443 principles and a simplified STRIDE model adapted
 for ICS. Industrial systems are sensitive because compromise can directly
 affect physical processes, safety, and production continuity, not just data.
@@ -480,8 +474,7 @@ affect physical processes, safety, and production continuity, not just data.
 \subsection{Threat Table}
 {\small
 \setlength{\tabcolsep}{4pt}
-\begin{longtable}{L{2.2cm} L{2.6cm} L{2.2cm} L{2.8cm} L{1.4cm} L{2.2cm}}
-\caption{ICS threat analysis matrix (IEC 62443-based)}\\
+\begin{longtable}{L{2.2cm} L{3cm} L{2.2cm} L{2.8cm} L{1.4cm} L{3.2cm}}
 \toprule
 \textbf{Asset} & \textbf{Threat} & \textbf{Attacker} & \textbf{STRIDE} & \textbf{Impact} & \textbf{Example} \\
 \midrule \endhead
@@ -497,16 +490,16 @@ SCADA/HMI & Denial of service & External & Denial of service & Med--High & Opera
 Webshop/API & Data modification & External & Tampering, Info.\ disclosure & Med--High & Order data changed \\
 Network switches & Rogue device & Student / Insider & Spoofing & Medium & Unauthorized laptop joins VLAN \\
 \bottomrule
+\caption{ICS threat analysis matrix}
 \end{longtable}
 }
 
-\subsection{Risk Matrix}\label{riskmatrix}
+\subsection{Risk Matrix}
 Likelihood and impact are scored 1--4; risk score is their product.
 
 {\small
 \setlength{\tabcolsep}{4pt}
 \begin{longtable}{L{4.0cm} L{1.8cm} L{6.0cm} L{1.4cm} L{1.6cm}}
-\caption{ICS threat risk assessment}\\
 \toprule
 \textbf{Threat} & \textbf{Likelihood} & \textbf{Impact (safety / production / education)} & \textbf{Score} & \textbf{Priority} \\
 \midrule \endhead
@@ -543,9 +536,11 @@ Engineering PC malware infection & High (3) & Critical (4): full control-layer
     Session hijacking (SCADA) & Low (1) & High (3): stealth manipulation, loss
     of trust & 3 & Low \\
 \bottomrule
+\caption{ICS threat risk assessment}\\
 \end{longtable}
 }
-\subsection{Hands-on Attack on Hardware}\label{profinetattack}
+
+\subsection{Hands-on Attack on Hardware}
 To better understand the nature of a possible attack, we
 executed a denial-of-service attack on the I/O device: a
 PROFINET DCP station name change attack. PROFINET DCP
@@ -558,6 +553,7 @@ device by station name, changing that name breaks the
 connection and stops the device from communicating, causing a
 denial of service.
 
+\pagebreak
 \subsubsection{Attack data flow}
 \begin{enumerate}
     \item Attacker connects to the network through switch.
@@ -589,7 +585,7 @@ connection. The script and the hands-on evidence are included
 in the attachment to this report.
 
 %% SECURITY REQUIREMENTS
-\section{Security Requirements}\label{sec:secreq}
+\section{Security Requirements}
 \begin{tabularx}
 {\textwidth}{>{\bfseries}p{2.5cm} X}
 \textit{SR-01} & \textbf{Network Segmentation} \vspace{0.5em}\\
@@ -854,9 +850,9 @@ with only explicitly whitelisted flows permitted:
 
 
 %% TOBE ARCHITECTURE
-\section{TO-BE Architecture}\label{tobearch}
+\section{TO-BE Architecture}
 
-\subsection{Logical Network Redesign}\label{tobelogical}
+\subsection{Logical Network Redesign}
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{img/logic_redesign.pdf}
@@ -921,6 +917,7 @@ on separate VLAN). This workstation purpose is to program and configure PLC's
 and HMI's with separation from IT nodes. Traffic is restricted only to TCP 102
 on PLC's and HMI's. This enforces least-privilage and IEC 62443-2-1 §4.3.3.
 
+\pagebreak
 \textbf{Syslog} \\ In the AS-IS architecture, there is no centralized logging
 system implemented. Syslog node collects all logs from the firewalls, managed
 switches, OPC UA and HTTP proxy, and MQTT broker. This provides post-attack
@@ -932,9 +929,8 @@ placed on separate VLAN inside IT zone, separated from indbound traffic from
 OT. Satisfies IEC 62443-2-1 §4.3.4 and ISO/IEC 27001 A.12.3.
 
 \subsubsection{Firewalls} 
-This section only describres briefly the high-level
-purpose of the firewall nodes. Further specification on permitted conduits is
-described in ~\ref{sec:secreq}
+This section only describres briefly the high-level purpose of the firewall
+nodes.
 
 \textbf{Edge Firewall} \\ Terminates all VPN tunnels from remote engineers and
 vendor support, enforces MFA before any traffic enters the IT zone, and blocks
@@ -955,7 +951,7 @@ traffic denied. Satisfies IEC 62443-3-3 SR 5.1 and the least privilege
 principle.
 
 %% TOBE IMPLEMENTATION
-\subsection{Network Implementation}\label{tobeimpl}
+\subsection{Network Implementation}
 The Network Implementation diagram is appended to the report for better
 visibility.
 \begin{figure}[H]
@@ -963,6 +959,7 @@ visibility.
     \includegraphics[width=1\textwidth]{img/redesign_iml.pdf}
     \caption{Network Implementation}
 \end{figure}
+\pagebreak
 
 \subsubsection{VLAN Segmentation \& Restricted Routing}
 The redesigned factory network is implemented using VLAN-based segmentation on
@@ -984,7 +981,8 @@ IT–IDMZ, IDMZ–OT Cell, OT Cell–OT Production) on a single physical firewal
 where each boundary corresponds to a rule set between the relevant VLAN
 interfaces. It satisfies IEC 62443-3-3 SR 5.1 (Restricted Data Flow) and SR 5.2
 (Zone Boundary Protection).
-
+\vspace{2em}
+\begin{table}[htbp]
 \renewcommand{\arraystretch}{1.3} % 30% more row height
 \begin{tabularx}{\textwidth}{>{\bfseries}p{2.5cm} X X}
     VLAN & \textbf{Zone} & \textbf{Nodes} \vspace{0.5em}\\
@@ -1000,10 +998,14 @@ interfaces. It satisfies IEC 62443-3-3 SR 5.1 (Restricted Data Flow) and SR 5.2
     105 & OT Prod - Station 5 & PLC5, HMI5 \\
     106 & OT Prod - Station 6 & PLC6, HMI6, Festo controller \\
 \end{tabularx}
+    \caption{VLAN segmentation}
+\end{table}
 
+
+\pagebreak
 \section{Hardware \& Configuration Proposal}
 \subsection{Protocol Hardening}
-The redesign (see chapter~\ref{tobeimpl}) controls where each protocol may flow. This
+The redesign (see chapter 8.1) controls where each protocol may flow. This
 chapter defines how each protocol is secured on the device and conduit level.
 
 \subsubsection{Profinet}
@@ -1028,7 +1030,7 @@ at the protocol level. Instead it is secured by isolation.
 \subsubsection{OPC UA}
 
 OPC UA is the only routed OT data protocol. Hardening is specified in SR-03.
-TODO chapter reference)
+(see chapter 7.SR-05)
 
 \begin{itemize}
 
@@ -1047,7 +1049,7 @@ TODO chapter reference)
 \subsubsection{MQTT}
 
 MQTT is used by the Festo CXV device for telemetry. It's hardening is specified
-in SR-04 TODO Chapter reference
+in SR-04 (see chapter 7.SR-04) Chapter reference
 
 \begin{itemize}
 
@@ -1068,7 +1070,7 @@ in SR-04 TODO Chapter reference
 
 \subsubsection{HTTP/Web Interfaces}
 Some OT devices need to expose plaintext HTTP web interfaces. Hardening is
-specified in SR-05 TODO chapter reference
+specified in SR-05 (see chapter 7.SR-05)
 
 \begin{itemize}
 
@@ -1089,7 +1091,7 @@ specified in SR-05 TODO chapter reference
 
 \subsubsection{S7comm+ Engineering Access}
 S7comm+ connection is used only for programming PLC's and HMI's. Hardening is
-sepcified in SR-06 and SR-07 TODO chapter reference
+sepcified in SR-06 and SR-07 (see chapter 7.SR-07)
 
 \begin{itemize}
 
@@ -1106,9 +1108,9 @@ sepcified in SR-06 and SR-07 TODO chapter reference
 
 \end{itemize}
 
-\subsection{Hardware Proposal}\label{hardwareproposal}
+\subsection{Hardware Proposal}
 This chapter lists the hardware required to implement the redesigned
-architecture (Chapter 7). 
+architecture (see chapter 7). 
 
 \subsubsection{Industrial Firewall}
 \renewcommand{\arraystretch}{1.3} % 30% more row height
@@ -1186,9 +1188,50 @@ architecture (Chapter 7).
     \midrule
 \end{tabularx}
 
-\subsection{Standards Alignment}\label{standardsalignment}
+\pagebreak
+\subsection{Standards Alignment}
 This section briefly describes each standard referenced in the report and lists
 the design and implementation measures applied against it.
+\begin{table}[h]
+\centering
+\begin{tabular}{p{4cm} p{11.5cm}}
+\textbf{Standard} & \textbf{Source} \\
+    \toprule
+    IEC 62443-1-1 & IEC, \textit{IEC TS 62443-1-1: Industrial communication
+    networks -- Network and system security -- Part 1-1: Terminology, concepts
+    and models}, International Electrotechnical Commission, Geneva, 2009. \\
+    \midrule
+
+    IEC 62443-2-1 & IEC, \textit{IEC 62443-2-1: Security for industrial
+    automation and control systems -- Part 2-1: Establishing an industrial
+    automation and control system security program}, International
+    Electrotechnical Commission, Geneva, 2024. \\
+    \midrule
+
+    IEC 62443-3-3 & IEC, \textit{IEC 62443-3-3: Industrial communication
+    networks -- Network and system security -- Part 3-3: System security
+    requirements and security levels}, International Electrotechnical
+    Commission, Geneva, 2013. \\
+    \midrule
+
+    ISO/IEC 27001 & ISO/IEC, \textit{ISO/IEC 27001:2022 -- Information
+    security, cybersecurity and privacy protection -- Information security
+    management systems -- Requirements}, International Organization for
+    Standardization, Geneva, 2022. \\
+    \midrule
+
+    NIS2 & European Parliament and Council, \textit{Directive (EU) 2022/2555
+    (NIS2 Directive) on measures for a high common level of cybersecurity
+    across the Union}, Official Journal of the European Union, 2022. \\ 
+    \midrule
+
+    Purdue Model (PERA) & T. J. Williams, \textit{The Purdue Enterprise
+    Reference Architecture}, Purdue Laboratory for Applied Industrial Control,
+    1992; as applied in ISA-95 / IEC 62264. \\
+    \midrule
+\end{tabular}
+\caption{Standards and frameworks referenced in this section}
+\end{table}
 
 \subsubsection{IEC 62443}
 A series of standards for security of Industrial Automation and Control Systems
@@ -1289,8 +1332,48 @@ permitted only from the Engineering Workstation in VLAN 40; OPC UA reachable
 only via the IDMZ proxy; trust based on authenticated identity and certificates
 rather than subnet membership.
 
+\subsection{Organizational \& Procedural Measures}
+
+\subsubsection{User Roles}
+Three roles, enforced on PLCs, HMIs, controllers, and the robot (SR-06.2). All access uses individual accounts — no shared logins. \\
+\begin{table}[htbp]
+\renewcommand{\arraystretch}{1.3} % 30% more row height
+\begin{tabularx}{\textwidth}{p{2.5cm} X X}
+    \textbf{Role} & \textbf{Permissions} & \textbf{Typical User} \vspace{0.5em}\\
+\toprule
+    Operator & Monitor HMIs, access Web Interfaces. No configuration or program changes. & Student running a session \\
+    \midrule
+    Engineer & Upload/modify PLC programs and parameters, configure HMIs. Login through Engineering Workstation only. & Lab technician / Teacher \\
+    \midrule
+    Administrator &  Device configuration, user and certificate management, firewall and switch configuration. &  Lab administrator \\
+    \bottomrule
+\end{tabularx}
+\vspace{1em}
+    \caption{Role - Premission configuration}
+\end{table}
+
+\subsubsection{Backup Strategy}
+Backup Strategy is specified in SR-10 (see chapter 7.SR-10).
+
+\begin{itemize}
+    \item PLC programs, HMI configurations, and controller configs are backed up after every change.
+    \item The MES database is backed up daily.
+    \item Backups go to dedicated backup storage (VLAN 10) and a copy is kept offline.
+    \item Recovery procedures are documented and tested at least twice per year.
+\end{itemize}
+
+\subsubsection{Incident Response}
+\begin{itemize}
+    \item Detect — Anomalies surface from the Syslog collector and firewall denied-traffic logs (SR-08). Operators report unexpected station behaviour immediately.
+    \item Contain — Isolate the affected device or VLAN (disconnect or firewall block). Stop the station if process safety is in doubt.
+    \item Preserve — Keep logs and alarms.
+    \item Recover — Restore PLC/HMI config or MES data from the last known-good backup (SR-10.4).
+    \item Document — Record what happened, the cause, and the fix. 
+\end{itemize}
+
+\pagebreak
 \section{Discussion and Limitations}
-\subsection{Limitations}\label{limitations}
+\subsection{Limitations}
 
 \textbf{Hardware.} There is limited hardware in the lab to fully implement a
 proper Purdue-model architecture. Several services (proxies, broker, logging,
@@ -1335,17 +1418,30 @@ plus vendor documentation and protocol specifications. A follow-up assessment
 with the plant running a full production cycle would be needed to confirm the
 communications map is complete and that no device or flow was missed.
 
-\section{General Reflection}
-Our access to the plant was time-boxed and shared with other groups.
-This limited how often we could repeat captures or test different operating
-states. This is normal in OT, since production systems are rarely free for
-security testing. Our experience was a smaller version of the access
-negotiation that real OT assessments require.
 
-The project also showed the gap between an ideal Purdue-model architecture and
-what is actually deployed. Some captured flows did not match the zone boundaries
-we expected. This shaped our threat modelling and several security requirements
-in Section~\ref{sec:secreq} (for example the firewall conduits in SR-01 and
-SR-02). We see this as a useful result on its own: segmentation for a system
-like this should start from observed traffic, not from an assumed architecture.
+\pagebreak
+\section{General Reflection}
+This project gave us a much more practical understanding of network design. We
+knew the theory behind VLANs, addressing, and switching beforehand, but
+actually splitting the factory into zones, deciding what traffic to allow
+between them, and turning that into firewall and routing rules made it
+concrete. Networking became a set of deliberate choices rather than just
+concepts.
+
+It also showed us how different OT and IT networking really are. IT focuses on
+confidentiality and frequent updates, while OT puts availability and process
+stability first. Things that are normal in IT, like patching during the day or
+rebooting a device, are not acceptable when a production line depends on it.
+
+We also realised the Purdue model is not always achievable in its ideal form. It
+works well as a reference for structuring zones, but the existing hardware and
+the way devices needed to communicate made some compromises unavoidable. In
+practice it is more of a guideline than a fixed blueprint, and the final layout
+depends on the specific use case.
+
+Finally, the project made clear how time-consuming this kind of setup is, and
+that it is not a one-time job. The design is only the start; keeping it secure
+requires ongoing patching, backups, monitoring, and incident handling, all of
+which need someone to maintain them. A secure factory relies as much on
+continuous effort as on the initial design.
 \end{document}
